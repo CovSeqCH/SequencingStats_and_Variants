@@ -51,7 +51,9 @@ mi = df.set_index(['reg', 'geoRegion', 'datum'])
 cases = mi.sum(level=[0, 2]).entries.reset_index()
 cases_by_cw = mi.groupby([pd.Grouper(level='reg'), pd.Grouper(
     level='datum', freq='W-MON', label='left', closed='left')]).sum().entries.loc[0:, slice(None)]
-cases_by_cw.reset_index()
+# cases_by_cw.reset_index()
+cases_by_cw = pd.DataFrame(cases_by_cw).rename_axis(index=['reg', 'date'])
+cases_by_cw
 # %%
 # dataset sequencing activity and regions
 ## cw, reg, seq, cases, (variants,...)

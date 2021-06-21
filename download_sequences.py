@@ -46,6 +46,18 @@ region_mapping = {
 df = df.assign(reg=lambda x: x.division.map(region_mapping))
 # Todo: Surveillance vs Non-Surveillance
 # %%
+# Sequences by week by region
+seq_by_reg = df.groupby(['reg', pd.Grouper(
+    level='date', freq='W-MON', label='left', closed='left')]).region.count()
+seq_by_reg = pd.concat([seq_by_reg, pd.concat(
+    {0: seq_by_reg.sum(level=1)}, names=['reg'])]).sort_index()
+
+# %%
+seq_and_cases = pd.DataFrame(seq_by_reg).join(cases_by_cw, how='outer').rename(
+    columns={'region': 'sequences', 'entries': 'cases'}).fillna(0)
+# %%
+seq_and_cases.xs(2, level='reg')[-10:]
+# %%
 
 
 def select_region(df, region=0) -> pd.DataFrame:
