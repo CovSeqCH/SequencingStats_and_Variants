@@ -8,12 +8,12 @@ Analyses and graph generation will have their own repo.
 
 # CSV definitions
 
-- *reg*: `int` for surveillance region, 0 stands for all of Switzerland
-- *date*: Beginning=Monday of respective calendar week
-- *Alpha,Beta,...*: Variants according to WHO definition
-- *Others*: Anything that's not accounted for in named variant columns
-- *Sequences*: Total of all sequences
-- *Cases*: Case count according to BAG dashboard
+- **reg**: `int` for surveillance region, 0 stands for all of Switzerland
+- **date**: Beginning=Monday of respective calendar week
+- **Alpha,Beta,...**: Variants according to WHO definition
+- **Others**: Anything that's not accounted for in named variant columns
+- **Sequences**: Total of all sequences
+- **Cases**: Case count according to BAG dashboard
 
 # Todo
 
