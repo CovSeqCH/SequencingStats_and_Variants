@@ -17,8 +17,8 @@ Analyses and graph generation will have their own repo.
 
 # Todo
 
-- [ ] Get sequence metadata from covSpectrum
-- [ ] Get case data from BAG website
-- [ ] Turn pango lineages into WHO VOC designations
-- [ ] Add region 1-6 definitions
-- [ ] Define output dataset
+- [x] Get sequence metadata from covSpectrum
+- [x] Get case data from BAG website
+- [x] Turn pango lineages into WHO VOC designations
+- [x] Add region 1-6 definitions
+- [x] Define output dataset
