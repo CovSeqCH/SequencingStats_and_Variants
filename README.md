@@ -6,6 +6,16 @@ Private repo at first, but may be made public, or at least the dataset that are 
 
 Analyses and graph generation will have their own repo.
 
+# How to run yourself
+
+The output `.csv` is produced in the script /scripts/download_sequences.py
+
+The plots are produced in the script /scripts/plots.py
+
+Variant definitions are in /scripts/variant_to_pango.py
+
+Region definitions in /scripts/surveillance_region_map.py
+
 # CSV definitions
 
 - **reg**: `int` for surveillance region, 0 stands for all of Switzerland
