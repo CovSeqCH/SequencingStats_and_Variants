@@ -9,9 +9,8 @@ import matplotlib.pyplot as plt
 # %%
 url = 'https://cov-spectrum.ethz.ch/api/resource/sample2'
 params = {'country': 'Switzerland',
-          'fields': 'date,region,country,division,ageGroup,sex,hospitalized,deceased,pangolinLineage'}
+          'fields': 'date,division,pangolinLineage'}
 r = requests.get(url, params)
-r.status_code
 # %%
 df = pd.read_json(r.content)
 # Unroll the count compression, one row per sample
@@ -26,26 +25,30 @@ def lineage_to_variant(lineage: str) -> str:
     for val, keys in variant_to_lineage.items():
         if lineage in keys:
             return val
-    return 'Others'
+    return 'others'
 
 
 df = df.assign(variant=lambda x: x.pangolinLineage.map(lineage_to_variant))
 # %%
-variants_by_reg = pd.pivot_table(df, values='region', columns='variant', aggfunc='count', fill_value=0, index=[
+# Variants by surveillance region
+variants_by_reg = pd.pivot_table(df, values='pangolinLineage', columns='variant', aggfunc='count', fill_value=0, index=[
     'reg', pd.Grouper(level='date', freq='W-MON', label='left', closed='left')])
 variants_by_reg
 # %%
-# Sequences by week by region
+# Add total sequences
 seq_by_reg = pd.concat([variants_by_reg.loc[1:], pd.concat(
     {0: variants_by_reg.sum(level=1)}, names=['reg'])]).sort_index()
-seq_by_reg = seq_by_reg.assign(Sequences=lambda x: x.sum(axis=1))
+seq_by_reg = seq_by_reg.assign(sequences=lambda x: x.sum(axis=1))
 # %%
-seq_and_cases = seq_by_reg.join(cases_by_cw(), how='outer').rename(
-    columns={'region': 'sequences', 'entries': 'cases'}).fillna(0).astype('int64')
+# Add cases from BAG dashboard
+seq_and_cases = seq_by_reg.join(
+    cases_by_cw(), how='outer').fillna(0).astype('int64')
 # %%
+# Export dataset
 seq_and_cases.to_csv('cases_seq_by_cw_region.csv')
 seq_and_cases.xs(1, level='reg')[-10:]
 # %%
+# Plots
 gen = seq_and_cases.loc[1].iloc[-20:]
 fig, ax = plt.subplots()
 ax.plot(gen.index, gen.Sequences/gen.Cases)
