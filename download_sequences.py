@@ -1,6 +1,11 @@
 # %%
 import requests
 import pandas as pd
+import numpy as np
+from surveillance_region_map import name_to_region as region_mapping
+from variant_to_pango import variant_to_lineage
+from download_cases import cases_by_cw
+import matplotlib.pyplot as plt
 # %%
 url = 'https://cov-spectrum.ethz.ch/api/resource/sample2'
 params = {'country': 'Switzerland',
@@ -12,106 +17,49 @@ df = pd.read_json(r.content)
 # Unroll the count compression, one row per sample
 df = df.loc[df.index.repeat(df['count'])]  # %%
 df = df.set_index('date')
-# Region definitions
-region_mapping = {
-    'Basel-Stadt': 3,
-    'Solothurn': 3,
-    'Aargau': 3,
-    'Vaud': 1,
-    'Bern': 2,
-    'Basel-Land': 3,
-    'Zürich': 5,
-    'Schwyz': 4,
-    'Thurgau': 5,
-    'Neuchâtel': 1,
-    'Schaffhausen': 5,
-    'Lucerne': 4,
-    'Graubünden': 6,
-    'Uri': 4,
-    'Geneva': 1,
-    'Ticino': 6,
-    'Valais': 1,
-    'Sankt Gallen': 5,
-    'Switzerland': pd.NA,
-    'Obwalden': 4,
-    'Jura': 2,
-    'Fribourg': 2,
-    'Zug': 4,
-    'Glarus': 5,
-    'Nidwalden': 4,
-    'Appenzell Ausserrhoden': 5,
-    'VALAIS': 1,
-    'Graub�nden': 6
-}
-df = df.assign(reg=lambda x: x.division.map(region_mapping))
-# Todo: Surveillance vs Non-Surveillance
+df = df.assign(reg=lambda x: x.division.map(
+    region_mapping).fillna(0).astype('int64'))
+# %%
+
+
+def lineage_to_variant(lineage: str) -> str:
+    for val, keys in variant_to_lineage.items():
+        if lineage in keys:
+            return val
+    return 'Others'
+
+
+df = df.assign(variant=lambda x: x.pangolinLineage.map(lineage_to_variant))
+# %%
+variants_by_reg = pd.pivot_table(df, values='region', columns='variant', aggfunc='count', fill_value=0, index=[
+    'reg', pd.Grouper(level='date', freq='W-MON', label='left', closed='left')])
+variants_by_reg
 # %%
 # Sequences by week by region
-seq_by_reg = df.groupby(['reg', pd.Grouper(
-    level='date', freq='W-MON', label='left', closed='left')]).region.count()
-seq_by_reg = pd.concat([seq_by_reg, pd.concat(
-    {0: seq_by_reg.sum(level=1)}, names=['reg'])]).sort_index()
-
+seq_by_reg = pd.concat([variants_by_reg.loc[1:], pd.concat(
+    {0: variants_by_reg.sum(level=1)}, names=['reg'])]).sort_index()
+seq_by_reg = seq_by_reg.assign(Sequences=lambda x: x.sum(axis=1))
 # %%
-seq_and_cases = pd.DataFrame(seq_by_reg).join(cases_by_cw, how='outer').rename(
-    columns={'region': 'sequences', 'entries': 'cases'}).fillna(0)
+seq_and_cases = seq_by_reg.join(cases_by_cw(), how='outer').rename(
+    columns={'region': 'sequences', 'entries': 'cases'}).fillna(0).astype('int64')
 # %%
-seq_and_cases.xs(2, level='reg')[-10:]
+seq_and_cases.to_csv('cases_seq_by_cw_region.csv')
+seq_and_cases.xs(1, level='reg')[-10:]
 # %%
-
-
-def select_region(df, region=0) -> pd.DataFrame:
-    out = df.copy(deep=True)
-    if region == 0:
-        return out
-    return out[out.reg == region]
-
-
-seq = select_region(df)
-seq.head()
+gen = seq_and_cases.loc[1].iloc[-20:]
+fig, ax = plt.subplots()
+ax.plot(gen.index, gen.Sequences/gen.Cases)
+ax.set_title("Proportion of sequenced cases by week in region 1")
+ax.set_ylabel("Proportion of sequenced cases")
+fig.autofmt_xdate()
 # %%
-# Sequences per calendar week (week beginning and including Monday)
-# Select e.g. region 2: seq = select_region(df,2)
-seq_count_by_week = pd.DataFrame(seq.resample(
-    'W-MON', label='left', closed='left').country.count())
-seq_count_by_week.rename(columns={'country': 'sequences'}, inplace=True)
-seq_count_by_week.index.rename('start_of_cw', inplace=True)
-seq_count_by_week = seq_count_by_week.assign(
-    calendar_week=lambda x: x.index.weekofyear)
-seq_count_by_week
+gen = seq_and_cases.loc[0].iloc[-10:]
+fig, ax = plt.subplots()
+ax.scatter(gen.index, gen.Delta/gen.Sequences)
+ax.set_title("Share of Delta of sequenced cases by week in Switzerland")
+ax.set_ylabel("Share of Delta")
+fig.autofmt_xdate()
 # %%
-fig = seq_count_by_week.sequences.plot()
-fig.set_title("Sequences by calendar week")
+fig = gen.Sequences.plot()
+fig.set_title("Sequences from region 1 (Geneva etc.) by calendar week")
 fig.set_ylabel("# of sequences")
-# %%
-# Sequences per calendar month (labelled by last day of month)
-seq_count_by_month = pd.DataFrame(seq.resample('M').country.count())
-seq_count_by_month.rename(columns={'country': 'sequences'}, inplace=True)
-seq_count_by_month.index.rename('end_of_month', inplace=True)
-seq_count_by_month = seq_count_by_month.assign(month=lambda x: x.index.month)
-seq_count_by_month
-# %%
-fig = seq_count_by_month.sequences.plot()
-fig.set_title("Sequences by calendar month")
-fig.set_ylabel("# of sequences")
-
-# Now can run above plots for each region
-
-# # %%
-# # Plots
-# # 1. Table of sequences by calendar week
-
-# # %%
-# df.columns
-# # %%
-# df.head()
-
-# # %%
-# df.pangolinLineage.value_counts()[0:60]
-# # %%
-# df.dtypes
-# # %%
-# df.pangolinLineage.value_counts()['AY.1']
-# # %%
-
-# %%
