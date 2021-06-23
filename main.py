@@ -24,7 +24,9 @@ def main(args):
 
     if(args.plot):
         import scripts.plots
-        scripts.plots.generate_plots()
+        df = scripts.plots.load_data()
+        df = scripts.plots.restrict_dates(df, args.start_date, args.end_date)
+        scripts.plots.generate_plots(df, args.output_dir)
         print('plots generated')
 
     # if(args.table):
@@ -64,7 +66,8 @@ if __name__ == "__main__":
     parser.add_argument("-o",
                         "--output-dir",
                         help="output sub-directory",
-                        required=False,)
+                        required=False,
+                        default='default')
 
     args = parser.parse_args()
     main(args)

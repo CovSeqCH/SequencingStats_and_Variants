@@ -7,6 +7,15 @@ Private repo at first, but may be made public, or at least the dataset that are 
 Analyses and graph generation will have their own repo.
 
 # How to run yourself
+Do fresh data download as follows:
+```
+./main.py --download
+```
+
+Sample usage to create plots for May in folder `/plots/may/`:
+```
+./main.py --plot --start-date 2021-04-01 --end-date 2021-06-07 --output-dir may
+```
 
 The output `.csv` is produced in the script /scripts/download_sequences.py
 
