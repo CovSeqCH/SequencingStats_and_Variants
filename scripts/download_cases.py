@@ -2,7 +2,7 @@
 import requests
 import pandas as pd
 import json
-from surveillance_region_map import iso_canton_to_region as code_mapping
+from .surveillance_region_map import iso_canton_to_region as code_mapping
 
 
 def cases_by_cw() -> pd.DataFrame:
@@ -19,6 +19,3 @@ def cases_by_cw() -> pd.DataFrame:
     cases_by_cw = pd.DataFrame(cases_by_cw).rename_axis(
         index=['region', 'date'])
     return cases_by_cw
-
-
-cases_by_cw()
