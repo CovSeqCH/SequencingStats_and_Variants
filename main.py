@@ -1,4 +1,4 @@
-#! python3
+#! /usr/bin/env python3
 
 import argparse
 import datetime
@@ -15,8 +15,6 @@ def valid_date(s):
 def main(args):
     """ Main entry point of the app """
 
-    print(args)
-
     if(args.download):
         import scripts.download_sequences
         scripts.download_sequences.generate_csv()
@@ -29,13 +27,16 @@ def main(args):
         scripts.plots.generate_plots(df, args.output_dir)
         print('plots generated')
 
-    # if(args.table):
-    #     import scripts.tables
-    #     scripts.tables.generate_tables()
-    #     print('tables generated')
+    if(args.table):
+        import scripts.plots
+        import scripts.tables
+        df = scripts.plots.load_data()
+        df = scripts.plots.restrict_dates(df, args.start_date, args.end_date)
+        scripts.tables.generate_tables(df, args.output_dir)
+        print('tables generated')
 
-    # if(not any(args.__dict__.values())):
-    #     parser.print_help()
+    if(not any([args.download, args.plot, args.table])):
+        parser.print_help()
 
 
 if __name__ == "__main__":

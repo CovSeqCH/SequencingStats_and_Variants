@@ -12,7 +12,7 @@ def load_data():
 
 
 def restrict_dates(df, start, end):
-    df = df.loc[(df.index >= start) & (df.index <= end)]
+    df = df.loc[(df.index >= start) & (df.index < end)]
     return df
 
 
