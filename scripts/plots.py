@@ -17,10 +17,12 @@ def restrict_dates(df, start, end):
 
 
 def save_fig(fig, output_dir, filename):
-    results_dir = f'plots/{output_dir}'
-    if not os.path.isdir(results_dir):
-        os.makedirs(results_dir)
-    fig.savefig(results_dir + '/' + filename)
+    file_types = ['pdf', 'png']
+    for file_type in file_types:
+        results_dir = f'plots/{output_dir}/{file_type}'
+        if not os.path.isdir(results_dir):
+            os.makedirs(results_dir)
+        fig.savefig(f'{results_dir}/{filename}.{file_type}')
 
 
 def generate_plots(df, output_dir):
@@ -34,7 +36,7 @@ def generate_plots(df, output_dir):
     ax.set_xlabel("First day of calendar week")
     ax.set_xticks(data.index)
     fig.autofmt_xdate()
-    save_fig(fig, output_dir, 'sequence_share_CH.pdf')
+    save_fig(fig, output_dir, 'sequence_share_CH')
 
     data = df[df.region == 0]
     fig, ax = plt.subplots()
@@ -46,7 +48,7 @@ def generate_plots(df, output_dir):
     ax.set_xlabel("First day of calendar week")
     ax.set_xticks(data.index)
     fig.autofmt_xdate()
-    save_fig(fig, output_dir, 'sequences_CH.pdf')
+    save_fig(fig, output_dir, 'sequences_CH')
 
     fig, ax = plt.subplots()
     for i in range(1, 7):
@@ -61,7 +63,7 @@ def generate_plots(df, output_dir):
     ax.legend()
     ax.set_xticks(data.index)
     fig.autofmt_xdate()
-    save_fig(fig, output_dir, 'sequence_share_regions.pdf')
+    save_fig(fig, output_dir, 'sequence_share_regions')
 
     data = df[df.region == 0]
     fig, ax = plt.subplots()
@@ -74,4 +76,4 @@ def generate_plots(df, output_dir):
     ax.legend()
     ax.set_xticks(data.index)
     fig.autofmt_xdate()
-    save_fig(fig, output_dir, 'variant_share_CH.pdf')
+    save_fig(fig, output_dir, 'variant_share_CH')
