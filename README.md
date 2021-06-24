@@ -1,6 +1,6 @@
-# Swiss Sars-CoV-2 Sequencing: Plots and Tables 
+# Swiss national Sars-CoV-2 genomic surveillance program: Plots and Tables 
 
-Command Line Interface program to create plots and tables for the monthly report of the Swiss Sars-CoV-2 Sequencing Consortium.
+Command Line Interface program to create plots and tables for the monthly report of the Swiss national Sars-CoV-2 genomic surveillance program.
 
 Sequencing data is obtained from covSpectrum's public API (for docs see https://github.com/cevo-public/cov-spectrum-docs/blob/develop/API.md)
 
