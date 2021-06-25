@@ -2,11 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import os
-from .variant_to_pango import variant_to_lineage
+# from .variant_to_pango import variant_to_lineage
+from variant_to_pango import variant_to_lineage
 
 
 def load_data():
-    df = pd.read_csv('data/cases_seq_by_cw_region.csv', parse_dates=['date'])
+    # df = pd.read_csv('data/cases_seq_by_cw_region.csv', parse_dates=['date'])
+    df = pd.read_csv('../data/cases_seq_by_cw_region.csv',
+                     parse_dates=['date'])
     df.set_index('date', inplace=True)
     return df
 

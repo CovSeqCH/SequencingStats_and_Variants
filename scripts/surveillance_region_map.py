@@ -37,6 +37,7 @@ name_to_region = {
     'Vaud': 1,
     'Bern': 2,
     'Basel-Land': 3,
+    'Basel-Landschaft': 3,
     'Zürich': 5,
     'Schwyz': 4,
     'Thurgau': 5,
@@ -57,4 +58,5 @@ name_to_region = {
     'Glarus': 5,
     'Nidwalden': 4,
     'Appenzell Ausserrhoden': 5,
+    'Appenzell Innerrhoden': 5,
 }
