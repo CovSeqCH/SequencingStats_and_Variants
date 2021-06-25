@@ -57,8 +57,9 @@ Create table with all calendar weeks whose Monday occurs in May `/tables/2021-05
 ## Output (for May)
 ![plot](./plots/2021-05/png/sequence_share_CH.png)
 ![plot](./plots/2021-05/png/sequence_share_regions.png)
-![plot](./plots/2021-05/png/sequences_CH.png)
+![plot](./plots/2021-05/png/sequences_regions.png)
 ![plot](./plots/2021-05/png/variant_share_CH.png)
+![plot](./plots/2021-05/png/variant_estimate_CH.png)
 
 region  |  C.36*  |  beta  |  delta  |  gamma  |  others  |  sequences  |  cases  |  proportion_sequenced
 --------|---------|--------|---------|---------|----------|-------------|---------|----------------------
