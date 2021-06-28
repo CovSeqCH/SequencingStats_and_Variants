@@ -35,7 +35,15 @@ def main(args):
         scripts.tables.generate_tables(df, args.output_dir)
         print('tables generated')
 
-    if(not any([args.download, args.plot, args.table])):
+    if(args.map):
+        import scripts.plots
+        import scripts.pie
+        df = scripts.plots.load_data()
+        df = scripts.plots.restrict_dates(df, args.start_date, args.end_date)
+        scripts.pie.generate_variant_map(df, args.output_dir)
+        print('map generated')
+
+    if(not any([args.download, args.plot, args.table, args.map])):
         parser.print_help()
 
 
@@ -51,6 +59,9 @@ if __name__ == "__main__":
 
     parser.add_argument("-t", "--table",
                         action="store_true", help="create tables")
+
+    parser.add_argument("-m", "--map",
+                        action="store_true", help="create map")
 
     parser.add_argument("-s",
                         "--start-date",

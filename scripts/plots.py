@@ -2,14 +2,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import os
-# from .variant_to_pango import variant_to_lineage
-from variant_to_pango import variant_to_lineage
+from .variant_to_pango import variant_to_lineage
+# from variant_to_pango import variant_to_lineage
 
 
 def load_data():
-    # df = pd.read_csv('data/cases_seq_by_cw_region.csv', parse_dates=['date'])
-    df = pd.read_csv('../data/cases_seq_by_cw_region.csv',
-                     parse_dates=['date'])
+    df = pd.read_csv('data/cases_seq_by_cw_region.csv', parse_dates=['date'])
+    # df = pd.read_csv('../data/cases_seq_by_cw_region.csv',
+    #  parse_dates=['date'])
     df.set_index('date', inplace=True)
     return df
 
@@ -25,7 +25,7 @@ def save_fig(fig, output_dir, filename):
         results_dir = f'plots/{output_dir}/{file_type}'
         if not os.path.isdir(results_dir):
             os.makedirs(results_dir)
-        fig.savefig(f'{results_dir}/{filename}.{file_type}')
+        fig.savefig(f'{results_dir}/{filename}.{file_type}', dpi=400)
 
 
 def generate_plots(df, output_dir):
@@ -36,7 +36,6 @@ def generate_plots(df, output_dir):
     ax1.set_title("Swiss sequences by calendar week")
     ax1.set_ylabel("Fraction sequenced")
     ax1.set_xlabel("Calendar week")
-    ax1.set_xticks(data.index)
     ax1.legend(loc=3)
     ax2 = ax1.twinx()
     ax2.plot(data.index, data.sequences,
@@ -44,6 +43,7 @@ def generate_plots(df, output_dir):
     ax2.set_ylabel("Number of sequences")
     ax2.set_ylim(0,)
     ax2.legend(loc=4)
+    ax1.set_xticks(data.index)
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%-W'))
     save_fig(fig, output_dir, 'sequence_share_CH')
 
