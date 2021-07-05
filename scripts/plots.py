@@ -2,8 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import os
-from .variant_to_pango import variant_to_lineage
-# from variant_to_pango import variant_to_lineage
+# from .variant_to_pango import variant_to_lineage
+from variant_to_pango import variant_to_lineage
 
 
 def load_data():
@@ -29,6 +29,8 @@ def save_fig(fig, output_dir, filename):
 
 
 def generate_plots(df, output_dir):
+    dates = pd.to_datetime(pd.Series(['20210503','20210510','20210517','20210524']))
+    surveillance = pd.Series([1643,1442,1326,877])
     data = df[df.region == 0]
     fig, ax1 = plt.subplots()
     ax1.plot(data.index, data.sequences/data.cases, label='Fraction sequenced')
@@ -40,6 +42,9 @@ def generate_plots(df, output_dir):
     ax2 = ax1.twinx()
     ax2.plot(data.index, data.sequences,
              label='Total number of sequences', color='g', ls='-.')
+    print(data.index,data.sequences)
+    ax2.plot(dates, surveillance,
+             label='Sequences from surveillance program', color='orange', ls=':')
     ax2.set_ylabel("Number of sequences")
     ax2.set_ylim(0,)
     ax2.legend(loc=4)
@@ -103,3 +108,8 @@ def generate_plots(df, output_dir):
     ax.set_xticks(data.index)
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%-W'))
     save_fig(fig, output_dir, 'variant_estimate_CH')
+
+if __name__ == "__main__":
+    df = load_data()
+    df = restrict_dates(df, '2021-04-01', '2021-06-01')
+    generate_plots(df, 'test')
