@@ -1,10 +1,9 @@
 # %%
 import requests
 import pandas as pd
-from .surveillance_region_map import name_to_region as region_mapping
-from .variant_to_pango import variant_to_lineage
-from .download_cases import cases_by_cw
-# %%
+from scripts.surveillance_region_map import name_to_region as region_mapping
+from scripts.variant_to_pango import variant_to_lineage
+from scripts.download_cases import cases_by_day, cases_by_cw
 
 
 def generate_csv():
@@ -32,19 +31,34 @@ def generate_csv():
     # Variants by surveillance region
     variants_by_reg = pd.pivot_table(df, values='count', columns='variant', aggfunc='sum', fill_value=0, index=[
         'region', pd.Grouper(level='date', freq='W-MON', label='left', closed='left')])
+    variants_by_reg_by_day = pd.pivot_table(df, values='count', columns='variant', aggfunc='sum', fill_value=0, index=[
+        'region', pd.Grouper(level='date', freq='D', label='left', closed='left')])
     # variants_by_reg
     # %%
     # Add total sequences
     seq_by_reg = pd.concat([variants_by_reg.loc[1:], pd.concat(
         {0: variants_by_reg.sum(level=1)}, names=['region'])]).sort_index()
     seq_by_reg = seq_by_reg.assign(sequences=lambda x: x.sum(axis=1))
+    seq_by_reg_by_day = pd.concat([variants_by_reg_by_day.loc[1:], pd.concat(
+        {0: variants_by_reg_by_day.sum(level=1)}, names=['region'])]).sort_index()
+    seq_by_reg_by_day = seq_by_reg_by_day.assign(
+        sequences=lambda x: x.sum(axis=1))
     # seq_by_reg
     # %%
     # Add cases from BAG dashboard
     seq_and_cases = seq_by_reg.join(
         cases_by_cw(), how='outer').fillna(0).astype('int64')
+    seq_and_cases_by_day = seq_by_reg_by_day.join(
+        cases_by_day(), how='outer').fillna(0).astype('int64')
     # seq_and_cases
     # %%
     # Export dataset
     seq_and_cases.to_csv('data/cases_seq_by_cw_region.csv')
+    seq_and_cases_by_day.to_csv('data/cases_seq_by_day_region.csv')
+
     # seq_and_cases.xs(1, level='region')[-10:]
+
+    # Todo:
+    # - Add data for each canton (by iso code)
+    # - Add alpha back in
+    # %%
