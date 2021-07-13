@@ -22,9 +22,7 @@ library(grid)
 library(tidyverse)
 
 
-### set working directory
-#setwd("")
-#
+
 ### load data:
 
 ## Swiss population size:
@@ -82,10 +80,8 @@ who_variant_names <- function(x){
   else{return(x)} 
 }
 variants_ch$who_variants <- sapply(variants_ch$variable, who_variant_names)
-lev <- unique(variants_ch$who_variants)
-others <- grep("others",lev)
-c36 <- grep("C.36*",lev)
-variants_ch$who_variants <- factor(variants_ch$who_variants, levels = c(lev[-c(c36,others)],lev[c(c36,others)]))
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta",  "C.36*",  "others")
+variants_ch$who_variants <- factor(variants_ch$who_variants, levels = lev)
 variants_ch$variable <- NULL
 
 ## Divide Switzerland in 6 regions as following:
