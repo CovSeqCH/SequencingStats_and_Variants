@@ -26,20 +26,50 @@ library(tidyverse)
 ### load data:
 
 ## Swiss population size:
-url <- "https://www.bag.admin.ch/dam/bag/de/dokumente/mt/k-und-i/aktuelle-ausbrueche-pandemien/2019-nCoV/covid-19-basisdaten-bevoelkerungszahlen.xlsx.download.xlsx/Population_Size_BFS.xlsx"
-GET(url, write_disk(tf <- tempfile(fileext = ".xls")))
-CH_canton_age_population <- read.xlsx(tf,sheetIndex = 2, startRow = 0)
-colnames(CH_canton_age_population) <- c("canton", "gender", "age", "no_pop")
+#url <- "https://www.bag.admin.ch/dam/bag/de/dokumente/mt/k-und-i/aktuelle-ausbrueche-pandemien/2019-nCoV/covid-19-basisdaten-bevoelkerungszahlen.xlsx.download.xlsx/Population_Size_BFS.xlsx"
+#GET(url, write_disk(tf <- tempfile(fileext = ".xls")))
+#CH_canton_age_population <- read.xlsx(tf,sheetIndex = 2, startRow = 0)
+#colnames(CH_canton_age_population) <- c("canton", "gender", "age", "no_pop")
+#remove(url)
+cantons_ch <- c("CH", "AG","AI","AR","BE","BL","BS","FR","GE",
+                "GL","GR", "JU","LU","NE","NW","OW","SG","SH",
+                "SO","SZ","TG",  "TI","UR","VD","VS","ZG","ZH")
 
 ## Swiss SARS-CoV-2  metadata:
-#html <- readLines("https://www.covid19.admin.ch/api/context")
-#html <- gsub("^(.*)https:", "https:", html[18])
-#url <- gsub("\"", "",html)
-#download(url, dest=paste0("covid19_bag_", Sys.Date(),".zip"), mode="wb") 
-#unzip(paste0("covid19_bag_", Sys.Date(),".zip"), exdir = "./")
-#BAG_Re_canton <- read.csv("./COVID19Re_geoRegion.csv")
-#BAG_test_canton <- read.csv("./COVID19Test_geoRegion_PCR_Antigen.csv")
-#BAG_cases_canton <- read.csv("./COVID19Cases_geoRegion.csv")
+url <- readLines("https://www.covid19.admin.ch/api/data/context")
+url <- gsub("^(.*)https:", "https:", url[18])
+url <- gsub("\"", "",url)
+download(url, dest=paste0("covid19_bag_", Sys.Date(),".zip"), mode="wb") 
+unzip(paste0("covid19_bag_", Sys.Date(),".zip"), exdir = "./temp_data")
+
+
+BAG_cases_canton <- read.csv("./temp_data/data/COVID19Cases_geoRegion.csv")
+colnames(BAG_cases_canton)[2] <- "date"
+colnames(BAG_cases_canton)[3] <- "cases_num"
+BAG_cases_canton <- BAG_cases_canton[BAG_cases_canton$geoRegio %in% cantons_ch,]
+
+BAG_test_canton <- read.csv("./temp_data/data/COVID19Test_geoRegion_PCR_Antigen.csv")
+colnames(BAG_test_canton)[1] <- "date"
+colnames(BAG_test_canton)[2] <- "tests_num"
+colnames(BAG_test_canton)[3] <- "tests_pos_num"
+BAG_test_canton <- BAG_test_canton[BAG_test_canton$geoRegio %in% cantons_ch,]
+
+BAG_Re_canton <- read.csv("./temp_data/data/COVID19Re_geoRegion.csv")
+BAG_Re_canton <- BAG_Re_canton[BAG_Re_canton$geoRegio %in% cantons_ch,]
+BAG_vaccine_canton <- read.csv("./temp_data/data/COVID19FullyVaccPersons_indication_w.csv")
+colnames(BAG_vaccine_canton)[4] <- "fulvacc_num"
+BAG_vaccine_canton <- BAG_vaccine_canton[BAG_vaccine_canton$geoRegio %in% cantons_ch,]
+
+BAG_data <- merge(BAG_cases_canton[,c("date","geoRegion","cases_num", "pop")], BAG_test_canton[,c("date","geoRegion","tests_num", "tests_pos_num")],by=c("date","geoRegion"), all=TRUE )
+BAG_data <- merge(BAG_data, BAG_Re_canton[,c("date","geoRegion", "median_R_mean", "median_R_highHPD", "median_R_lowHPD")],by=c("date","geoRegion"), all=TRUE )
+BAG_data <- merge(BAG_data, BAG_vaccine_canton[,c("date","geoRegion", "fulvacc_num")],by=c("date","geoRegion"), all=TRUE )
+
+unlink("temp_data", recursive = TRUE)
+unlink(paste0("covid19_bag_", Sys.Date(),".zip"), recursive = TRUE)
+remove(BAG_cases_canton)
+remove(BAG_test_canton)
+remove(BAG_Re_canton)
+remove(BAG_vaccine_canton)
 
 ## Swiss SARS-CoV-2 sequencing metadata:
 variants_ch <- read.csv("https://raw.githubusercontent.com/CovSeqCH/SequencingStats_and_Variants/cr-dev/data/cases_seq_by_day_region.csv")
@@ -56,20 +86,13 @@ period <- function(x) {
 period_date <- period(Sys.Date())
 period_days <- seq(period_date[1], period_date[2],1)
 
-
 variants_ch <- subset(variants_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))#Sys.Date()-14
+BAG_data <- subset(BAG_data, as_date(date) %in% seq(time_window[1],time_window[2],1))
 
-#CH_canton_age_population <- subset(CH_canton_age_population, !canton %in% c("FL"))
-#BAG_Re_canton <- subset(BAG_Re_canton, !geoRegion %in% c("FL", "CHFL") & as_date(date) %in% period_days)
-#BAG_test_canton <- subset(BAG_test_canton, !geoRegion %in% c("FL", "CHFL") & as_date(datum) %in% period_days)
-#BAG_cases_canton <- subset(BAG_cases_canton,!geoRegion %in% c("FL", "CHFL") &  as_date(datum) %in% period_days)
-#metadata_ch <- variants_ch[names(variants_ch)  %in% c("region", "date","sequences", "cases")]
 
 ### renaming functions / variables generation
 ## Renaming variants according to WHO
-#variants_data <- variants_ch[!names(variants_ch)  %in% c("sequences", "cases")]
 variants_ch <- melt(variants_ch, id.vars=c("date", "region","cases","sequences"))
-#variants_data <- melt(variants_data, id.vars=c("date", "region"))
 who_variant_names <- function(x){
   if(x== "alpha"){return("Alpha")}
   else if(x== "beta"){return("Beta")}#else if(grepl("B.1.351",x)){return("beta")}
@@ -91,10 +114,38 @@ variants_ch$variable <- NULL
 ## region 4 «LU, NW, OW, SZ, UR, ZG»
 ## region 5 «AI, AR, GL, SG, SH, TG, ZH»
 ## region 6 «GR, TI».
-#CH_canton_age_population$regions <- sapply(CH_canton_age_population$canton, from_cantons_to_regions)
-#BAG_Re_canton$regions  <- sapply(BAG_Re_canton$geoRegion, from_cantons_to_regions)
-#BAG_test_canton$regions  <- sapply(BAG_test_canton$geoRegion, from_cantons_to_regions)
-#BAG_cases_canton$regions  <- sapply(BAG_cases_canton$geoRegion, from_cantons_to_regions)
+from_cantons_to_regions <- function(x){
+  if(x== "AG"){return("region_3")}
+  else if(x== "AI"){return("region_5")}
+  else if(x== "AR"){return("region_5")}
+  else if(x== "BE"){return("region_2")}
+  else if(x== "BL"){return("region_3")}
+  else if(x== "BS"){return("region_3")}
+  else if(x== "FR"){return("region_2")}
+  else if(x== "GE"){return("region_1")}
+  else if(x== "GL"){return("region_5")}
+  else if(x== "GR"){return("region_6")}
+  else if(x== "JU"){return("region_2")}
+  else if(x== "LU"){return("region_4")}
+  else if(x== "NE"){return("region_1")}
+  else if(x== "NW"){return("region_4")}
+  else if(x== "OW"){return("region_4")}
+  else if(x== "SG"){return("region_5")}
+  else if(x== "SH"){return("region_5")}
+  else if(x== "SO"){return("region_3")}
+  else if(x== "SZ"){return("region_4")}
+  else if(x== "TG"){return("region_5")}
+  else if(x== "TI"){return("region_6")}
+  else if(x== "UR"){return("region_4")}
+  else if(x== "VD"){return("region_1")}
+  else if(x== "VS"){return("region_1")}
+  else if(x== "ZG"){return("region_4")}
+  else if(x== "ZH"){return("region_5")}
+  else {return("Unknown")} 
+}
+BAG_data$region  <- sapply(BAG_data$geoRegion, from_cantons_to_regions)
+BAG_data$region <- factor(BAG_data$region, levels = c("region_1","region_2","region_3","region_4","region_5","region_6"))
+#BAG_data$tests_num[BAG_data$geoRegion=="CH"]
 
 region_names <- function(x){
   if(x== "0"){return("CH")}
@@ -107,7 +158,8 @@ region_names <- function(x){
 }
 variants_ch$region <- sapply(variants_ch$region, region_names)
 variants_ch$region <- factor(variants_ch$region, levels = c("region_1","region_2","region_3","region_4","region_5","region_6","CH"))
-#metadata_ch$region <- sapply(metadata_ch$region, region_names)
-#metadata_ch$region <- factor(metadata_ch$region, levels = c("region_1","region_2","region_3","region_4","region_5","region_6","CH"))
+
+
+
 
 

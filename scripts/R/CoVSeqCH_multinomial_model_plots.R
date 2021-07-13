@@ -2,7 +2,7 @@
 #### Combating SARS-CoV-2 variants in Switzerland
 ## Created by M Reichmuth on June 2021
 
-## help from here: https://github.com/tomwenseleers/newcovid_belgium/blob/main/functions/simulate_overdispersion.R #https://zepel.io/blog/how-to-create-a-new-branch-in-github/#create-branch-command-line
+## help from here: https://github.com/tomwenseleers/newcovid_belgium/blob/main/functions/simulate_overdispersion.R
 
 ### set working directory
 setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#may need to be adapted
