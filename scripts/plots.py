@@ -40,6 +40,8 @@ def generate_plots(df, output_dir):
     ax2 = ax1.twinx()
     ax2.plot(data.index, data.sequences,
              label='Total number of sequences', color='g', ls='-.')
+    ax2.plot(data.index, data.in_program,
+             label='Sequences by consortium', color='r', ls=':')
     ax2.set_ylabel("Number of sequences")
     ax2.set_ylim(0,)
     ax2.legend(loc=4)
