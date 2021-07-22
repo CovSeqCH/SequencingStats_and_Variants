@@ -54,23 +54,14 @@ Create table with all calendar weeks whose Monday occurs in May `/tables/2021-05
 ./main.py --tables --start-date 2021-05-01 --end-date 2021-06-01 --output-dir 2021-05 
 ```
 
-## Output (for May)
-![plot](./plots/2021-05/png/sequence_share_CH.png)
-![plot](./plots/2021-05/png/sequence_share_regions.png)
-![plot](./plots/2021-05/png/sequences_regions.png)
-![plot](./plots/2021-05/png/variant_share_CH.png)
-![plot](./plots/2021-05/png/variant_estimate_CH.png)
-![plot](./plots/2021-05/png/variant_map.png)
+## Output (for June)
+![plot](./plots/2021-06/png/sequence_share_CH.png)
+![plot](./plots/2021-06/png/sequence_share_regions.png)
+![plot](./plots/2021-06/png/sequences_regions.png)
+![plot](./plots/2021-06/png/variant_share_CH.png)
+![plot](./plots/2021-06/png/variant_estimate_CH.png)
+![plot](./plots/2021-06/png/variant_map.png)
 
-region  |  C.36*  |  beta  |  delta  |  gamma  |  others  |  sequences  |  cases  |  proportion_sequenced
---------|---------|--------|---------|---------|----------|-------------|---------|----------------------
-0       |  87     |  27    |  104    |  89     |  5233    |  5540       |  34082  |  0.163
-1       |  37     |  5     |  49     |  5      |  1500    |  1596       |  8724   |  0.183
-2       |  3      |  3     |  8      |  5      |  529     |  548        |  5549   |  0.099
-3       |  7      |  8     |  30     |  17     |  1499    |  1561       |  5081   |  0.307
-4       |  0      |  1     |  2      |  3      |  138     |  144        |  4002   |  0.036
-5       |  14     |  8     |  12     |  51     |  1173    |  1258       |  9278   |  0.136
-6       |  24     |  2     |  2      |  8      |  359     |  395        |  1448   |  0.273
 
 ## Maintenance
 
