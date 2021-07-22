@@ -1,5 +1,5 @@
-#! /usr/bin/env sh
-# set -x
+#! /usr/bin/bash
+set -x
 
 # Download and wrangle data
 ./main.py -d
