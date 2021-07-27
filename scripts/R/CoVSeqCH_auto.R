@@ -4,4 +4,4 @@
 setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#may need to be adapted
 ### load data:
 source("./scripts/R/CoVSeqCH_suptable.R")
-source("./scripts/R/CoVSeqCH_multonomial_model_plot.R")
+source("./scripts/R/CoVSeqCH_multinomial_model_plots.R")

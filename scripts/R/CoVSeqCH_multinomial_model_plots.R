@@ -192,7 +192,7 @@ regional_variants_plot_model <- ggplot(predict.eff_date_reg) +
   geom_rect(aes(xmin = as_date(max(seqch$date)), ymin = 0, xmax = time_window[2], ymax = 1), fill= col_9[9], colour= "transparent", alpha=0.008)+
   scale_x_date(date_breaks = "1 month", 
                date_labels = "%b",
-               limits = as_date(c(time_window[1],time_window[2]+1)))+
+               limits = as_date(c(time_window[1],time_window[2]+15)))+
   scale_color_manual(values= col_9[2:7],name="SARS-CoV-2 variants") +
   scale_fill_manual(values= col_9[2:7],name="SARS-CoV-2 variants") +
   theme_minimal()+
@@ -205,11 +205,14 @@ regional_variants_plot_model <- ggplot(predict.eff_date_reg) +
   labs(tag=bquote(.("")), x = "", y =bquote("Proportion of SARS-CoV-2 variants"))
 regional_variants_plot_model_log <- regional_variants_plot_model+
   coord_cartesian(ylim = c(10^-3, 1))+
+  scale_x_date(date_breaks = "1 month", 
+               date_labels = "%b",
+               limits = as_date(c(time_window[1],time_window[2]+1)))+
   scale_y_continuous(trans='log10',labels=yscaling, limits = c(min(predict.eff_date$lower),1))+
   labs(y =bquote("Proportion of SARS-CoV-2 variants (log10-scale)"))
 com_regional_ch_variants<- grid.arrange(variants_plot_model, variants_plot_model_log, 
                                         variants_legend,regional_variants_plot_model, 
                                         regional_variants_plot_model_log, nrow = 2)
-ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 15,  bg = "transparent")
-ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 15,  bg = "transparent")
+ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 18,  bg = "transparent")
+ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 18,  bg = "transparent")
 
