@@ -124,6 +124,7 @@ venv.bak/
 # mkdocs documentation
 /site
 /backup*
+/Swiss_sequencing_project
 
 
 # mypy
