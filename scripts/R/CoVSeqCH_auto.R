@@ -5,3 +5,4 @@ setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#m
 ### load data:
 source("./scripts/R/CoVSeqCH_suptable.R")
 source("./scripts/R/CoVSeqCH_multinomial_model_plots.R")
+#renv::snapshot()#?renv::paths`

@@ -55,10 +55,12 @@ BAG_test_canton <- BAG_test_canton[BAG_test_canton$geoRegio %in% cantons_ch,]
 BAG_test_canton_pcr <- BAG_test_canton[BAG_test_canton$nachweismethode=="PCR",]
 colnames(BAG_test_canton_pcr)[2] <- "pcrtests_num"
 colnames(BAG_test_canton_pcr)[3] <- "pcrtests_pos_num"
+
 BAG_test_canton_antig <- BAG_test_canton[BAG_test_canton$nachweismethode=="Antigen_Schnelltest",]
 colnames(BAG_test_canton_antig)[2] <- "antigtests_num"
 colnames(BAG_test_canton_antig)[3] <- "antigtests_pos_num"
-BAG_test_canton <- merge(BAG_test_canton_antig[,c(1,2,3,50)], BAG_test_canton_pcr[,c(1,2,3,50)],by=c("date","geoRegion"), all=TRUE )
+geoR <- grep("geoRegion",colnames(BAG_test_canton))
+BAG_test_canton <- merge(BAG_test_canton_antig[,c(1,2,3,geoR)], BAG_test_canton_pcr[,c(1,2,3,geoR)],by=c("date","geoRegion"), all=TRUE )
 BAG_test_canton<- BAG_test_canton %>% 
   rowwise() %>% #rowwise will make sure the sum operation will occur on each row
   mutate(tests_num = sum(antigtests_num,pcrtests_num, na.rm=TRUE))%>% 
@@ -71,7 +73,7 @@ BAG_Re_canton <- BAG_Re_canton[BAG_Re_canton$geoRegio %in% cantons_ch,]
 #BAG_vaccine_canton <- read.csv("./temp_data/data/COVID19FullyVaccPersons_indication_w.csv")
 #colnames(BAG_vaccine_canton)[4] <- "fulvacc_num"
 #BAG_vaccine_canton <- BAG_vaccine_canton[BAG_vaccine_canton$geoRegio %in% cantons_ch,]
-
+BAG_data <- c()
 BAG_data <- merge(BAG_cases_canton[,c("date","geoRegion","cases_num", "pop")], BAG_test_canton[,c("date","geoRegion","tests_num", "tests_pos_num")],by=c("date","geoRegion"), all=TRUE )
 BAG_data <- merge(BAG_data, BAG_Re_canton[,c("date","geoRegion", "median_R_mean", "median_R_highHPD", "median_R_lowHPD")],by=c("date","geoRegion"), all=TRUE )
 BAG_data <- BAG_data[!is.na(BAG_data$cases_num),]
