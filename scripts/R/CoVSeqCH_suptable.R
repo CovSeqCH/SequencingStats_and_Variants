@@ -45,7 +45,7 @@ for (c in unname(unlist(rownames(table)))){
   #14d-incidence
   period_14 <- length(period_days)/14
   if(grepl("region", c)){
-    table[,3][rownames(table) == c] <- round(sum(na.omit(BAG_data$cases_num[BAG_data$region %in% c]))/sum(unique(BAG_data$pop[BAG_data$region %in% c])*period_14)*10^5)
+    table[,3][rownames(table) == c] <- round(sum(na.omit(BAG_data$cases_num[BAG_data$region %in% c]))/sum(unique(BAG_data$pop[BAG_data$region %in% c]))*period_14*10^5)
   }
   else{
     table[,3][rownames(table) == c] <- round(sum(na.omit(BAG_data$cases_num[BAG_data$geoRegion %in% c]))/unique(BAG_data$pop[BAG_data$geoRegion %in% c])*period_14*10^5)
