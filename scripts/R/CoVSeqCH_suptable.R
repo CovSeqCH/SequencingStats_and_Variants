@@ -11,7 +11,7 @@ BAG_data <- subset(BAG_data, as_date(date) %in% seq(period_date[1],period_date[2
 seqch <- subset(seq_ch, as_date(date) %in% seq(period_date[1],period_date[2],1))
 
 ### Supplementary table creation:
-table <- as.data.frame(matrix(ncol=21, nrow= 33))
+table <- as.data.frame(matrix(ncol=25, nrow= 33))
 rownames(table) <- c("CH",
                      "region_1",
                      unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_1"])),
@@ -195,18 +195,18 @@ for (c in unname(unlist(rownames(table)))){
     table[,17][rownames(table) == c] <- "-"
   }
   
-  # Number of C.36* 
+  # Number of Lambda 
   if(grepl("CH", c)){
-    table[,18][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "C.36*"]))
+    table[,18][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "Lambda"]))
   }
   else if(grepl("region", c)){
-    table[,18][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "C.36*"]))
+    table[,18][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "Lambda"]))
   }
   else{
-    table[,18][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "C.36*"]))
+    table[,18][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Lambda"]))
   }
   
-  # Proportion of  C.36* to all sequences
+  # Proportion of  Lambda to all sequences
   if(table[,18][rownames(table) == c]!=0 & !is.na(table[,18][rownames(table) == c])){
     interval <- binom.test(as.numeric(table[,18][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,19][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
@@ -218,18 +218,18 @@ for (c in unname(unlist(rownames(table)))){
     table[,19][rownames(table) == c] <- "-"
   }
   
-  # Number of "other"
+  # Number of B.1.1.318 
   if(grepl("CH", c)){
-    table[,20][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "others"]))
+    table[,20][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "B.1.1.318"]))
   }
   else if(grepl("region", c)){
-    table[,20][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "others"]))
+    table[,20][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "B.1.1.318"]))
   }
   else{
-    table[,20][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "others"]))
+    table[,20][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "B.1.1.318"]))
   }
   
-  # Proportion of  C.36* to all sequences
+  # Proportion of  B.1.1.318 to all sequences
   if(table[,20][rownames(table) == c]!=0 & !is.na(table[,20][rownames(table) == c])){
     interval <- binom.test(as.numeric(table[,20][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,21][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
@@ -239,6 +239,52 @@ for (c in unname(unlist(rownames(table)))){
   }
   else{
     table[,21][rownames(table) == c] <- "-"
+  }
+  
+  # Number of C.36* 
+  if(grepl("CH", c)){
+    table[,22][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "C.36*"]))
+  }
+  else if(grepl("region", c)){
+    table[,22][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "C.36*"]))
+  }
+  else{
+    table[,22][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "C.36*"]))
+  }
+  
+  # Proportion of  C.36* to all sequences
+  if(table[,22][rownames(table) == c]!=0 & !is.na(table[,22][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,22][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+    table[,23][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
+    if(interval$estimate<"0.001" & interval$estimate!="0"){
+      table[,23][rownames(table) == c] <- "<0.1"
+    }
+  }
+  else{
+    table[,23][rownames(table) == c] <- "-"
+  }
+  
+  # Number of "other"
+  if(grepl("CH", c)){
+    table[,24][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "others"]))
+  }
+  else if(grepl("region", c)){
+    table[,24][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "others"]))
+  }
+  else{
+    table[,24][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "others"]))
+  }
+  
+  # Proportion of  others to all sequences
+  if(table[,24][rownames(table) == c]!=0 & !is.na(table[,24][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,24][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+    table[,25][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
+    if(interval$estimate<"0.001" & interval$estimate!="0"){
+      table[,25][rownames(table) == c] <- "<0.1"
+    }
+  }
+  else{
+    table[,25][rownames(table) == c] <- "-"
   }
 }
 
@@ -251,6 +297,8 @@ colnames(table) <- c("Population size",
                      "Beta","Percentage Beta (95% CI)",
                      "Gamma","Percentage Gamma (95% CI)",
                      "Delta","Percentage Delta (95% CI)",
+                     "Lambda","Percentage Lambda (95% CI)",
+                     "B.1.1.318","Percentage B.1.1.318 (95% CI)",
                      "C.36*","Percentage C.36* (95% CI)",
                      "Other variants","Percentage other variants (95% CI)")
 #sum(table$`Confirmed cases`[grepl("region",rownames(table))])==sum(table$`Confirmed cases`[grepl("CH",rownames(table))])
@@ -276,6 +324,13 @@ table[is.na(table)] <- "-"
 # output table:
 perioddate <- paste0(unique(format(period_date, format="%b")),collapse = "_")
 write.xlsx(table, paste0("./tables/",format(period_date[2],"%Y-%m"),"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("Report from ",period_date[1], " to ", period_date[2]), 
+           col.names=TRUE, row.names=TRUE, append=FALSE)
+
+
+table <- table[grepl("Region|Switzerland", rownames(table)),]
+table<- table[,c(8:25)]
+
+write.xlsx(table, paste0("./tables/",format(period_date[2],"%Y-%m"),"/regional_table_",perioddate,".xlsx"),sheetName=paste0("Report from ",period_date[1], " to ", period_date[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)
 remove(table)
 

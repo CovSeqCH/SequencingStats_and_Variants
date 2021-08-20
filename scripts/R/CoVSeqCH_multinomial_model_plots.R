@@ -166,8 +166,8 @@ variants_plot_model <- ggplot() +
   scale_x_date(date_breaks = "1 month", 
                date_labels = "%b",
                limits = as_date(c(time_window[1],time_window[2]+1)))+
-  scale_color_manual(values= col_9[2:7],name="SARS-CoV-2 variants") +
-  scale_fill_manual(values= col_9[2:7],name="SARS-CoV-2 variants") +
+  scale_color_manual(values= col_9[2:9],name="SARS-CoV-2 variants") +
+  scale_fill_manual(values= col_9[2:9],name="SARS-CoV-2 variants") +
   theme_minimal()+
   theme(plot.subtitle = element_text(hjust = 0.5),
         axis.title.y = element_text(size = 10),
@@ -193,8 +193,8 @@ regional_variants_plot_model <- ggplot(predict.eff_date_reg) +
   scale_x_date(date_breaks = "1 month", 
                date_labels = "%b",
                limits = as_date(c(time_window[1],time_window[2]+15)))+
-  scale_color_manual(values= col_9[2:7],name="SARS-CoV-2 variants") +
-  scale_fill_manual(values= col_9[2:7],name="SARS-CoV-2 variants") +
+  scale_color_manual(values= col_9[2:9],name="SARS-CoV-2 variants") +
+  scale_fill_manual(values= col_9[2:9],name="SARS-CoV-2 variants") +
   theme_minimal()+
   theme(legend.position = "none",
         axis.title.y = element_text(size = 10),

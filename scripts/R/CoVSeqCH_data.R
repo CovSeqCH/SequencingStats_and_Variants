@@ -126,8 +126,10 @@ who_variant_names <- function(x){
   if(grepl("Alpha|alpha|B.1.1.7",x)){return("Alpha")}
   else if(grepl("Beta|B.1.351|beta|B.1.351.1|B.1.351.2",x)){return("Beta")}
   else if(grepl("Gamma|gamma|P.1|P.1.1|P.1.2",x)){return("Gamma")}
-  else if(grepl("Delta|delta|B.1.617.2|AY.1|AY.2",x)){return("Delta")}
-  else if(grepl("C.36*|C.36.|C.36|C.36.3",x)){return("C.36*")}
+  else if(grepl("Delta|delta|B.1.617.2|AY.1|AY.2|AY.3|AY.3.1|AY.",x)){return("Delta")}
+  else if(grepl("C.37|Lambda|lambda",x)){return("Lambda")}
+  else if(grepl("C.36",x)){return("C.36*")}
+  else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}
   else{return("others")}
   #else if(x =="others"){return("others")}
   #else{return(x)} 
@@ -135,7 +137,7 @@ who_variant_names <- function(x){
 variants_ch$who_variants <- sapply(variants_ch$variable, who_variant_names)
 seq_ch$who_variants <- sapply(seq_ch$pangolinLineage, who_variant_names)
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta",  "C.36*",  "others")
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","B.1.1.318",  "C.36*",  "others")
 variants_ch$who_variants <- factor(variants_ch$who_variants, levels = lev)
 seq_ch$who_variants <- factor(seq_ch$who_variants, levels = lev)
 variants_ch$variable <- NULL
