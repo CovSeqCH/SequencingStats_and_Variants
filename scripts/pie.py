@@ -52,9 +52,8 @@ def generate_variant_map(df, output_dir):
         ratios = []
         colors = list(map(cm.get_cmap('Set1'),
                           np.linspace(0, 0.775, len(variant_to_lineage)+1)))
-        if len(variant_to_lineage) == 4:
-            colors = ['forestgreen', 'gold',
-                      'tab:red', 'tab:purple', 'gainsboro']
+        if len(variant_to_lineage) == 5:
+            colors = [(0.819607843137255, 0.4, 0.4), (1, 0.4, 0.4), (1, 0.701960784313725, 0.701960784313725), (0.4, 0.63921568627451, 0.4), (0.956862745098039, 0.862745098039216, 0.505882352941176),(0,0,0)]
         for variant in variant_to_lineage.keys():
             ratios.append(data[variant]/data.sequences)
         ratios.append(data['others']/data.sequences)
@@ -66,7 +65,7 @@ def generate_variant_map(df, output_dir):
 
     variant_names = list(variant_to_lineage.keys())
     variant_names.append('others')
-    legend_elements = [Patch(facecolor=color, label=str.capitalize(name))
+    legend_elements = [Patch(facecolor=color, label=name)
                        for color, name in zip(colors, variant_names)]
 
     plt.title(

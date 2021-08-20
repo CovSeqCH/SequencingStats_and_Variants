@@ -81,7 +81,7 @@ def generate_plots(df, output_dir):
     fig, ax = plt.subplots()
     for key in variant_to_lineage.keys():
         ax.plot(data.index, data[key]/data.sequences,
-                label=str.capitalize(key))
+                label=key)
     ax.set_title("Fraction of variants by week in Switzerland")
     ax.set_ylabel("Fraction of sequences")
     ax.set_xlabel("Calendar week")
@@ -95,7 +95,7 @@ def generate_plots(df, output_dir):
     fig, ax = plt.subplots()
     for key in variant_to_lineage.keys():
         ax.plot(data.index, data[key]/data.sequences*data.cases,
-                label=str.capitalize(key))
+                label=key)
     ax.set_title(
         "Estimated number of cases per week per variant in Switzerland")
     ax.set_ylabel("Estimated number of cases (fraction x cases)")
