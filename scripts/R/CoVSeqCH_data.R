@@ -89,22 +89,30 @@ remove(BAG_test_canton_antig)
 remove(BAG_test_canton_pcr)
 
 ## Swiss SARS-CoV-2 sequencing metadata:
-variants_ch <- read.csv("https://raw.githubusercontent.com/CovSeqCH/SequencingStats_and_Variants/cr-dev/data/cases_seq_by_day_region.csv")
-#GISAID=1553 for June;
+#variants_ch <- read.csv("https://raw.githubusercontent.com/CovSeqCH/SequencingStats_and_Variants/cr-dev/data/cases_seq_by_day_region.csv")
+
 # new to get sequence data incl. canton:
 url <- GET("https://cov-spectrum.ethz.ch/api/resource/sample2?country=Switzerland&fields=date,division,pangolinLineage")
 jsonRespParsed<-content(url,as="parsed") 
 seq_ch <- jsonRespParsed%>%bind_rows#%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
 seq_ch$country <- "CH"
 seq_ch <- seq_ch[rep(row.names(seq_ch), seq_ch$count), c(1,2,3,5)]
-
+seq_ch <- seq_ch[!is.na(seq_ch$pangolinLineage),]
 
 remove(url)
 remove(jsonRespParsed)
 
 ### prepare data / data cleaning:
 month_end <- as.numeric(format(Sys.Date(),"%m"))
-time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-0", month_end+1,"-01"))-1)
+if(month_end+1>9){
+  time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
+  
+}
+if(month_end+1<10){
+  time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-0", month_end+1,"-01"))-1)
+  
+}
+time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
 month_start <- format(as.numeric(format(Sys.Date(),"%m"))-1, format="%m")
 month_end <- format(month_end, format="%m")
 period <- function(x) {
@@ -114,33 +122,32 @@ period <- function(x) {
 period_date <- period(Sys.Date())
 period_days <- seq(period_date[1], period_date[2],1)
 
-variants_ch <- subset(variants_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))#Sys.Date()-14
+#variants_ch <- subset(variants_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))#Sys.Date()-14
 BAG_data <- subset(BAG_data, as_date(date) %in% seq(time_window[1],time_window[2],1))
 seq_ch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))
 
 
 ### renaming functions / variables generation
 ## Renaming variants according to WHO
-variants_ch <- melt(variants_ch, id.vars=c("date", "region","cases","sequences"))
+#variants_ch <- melt(variants_ch, id.vars=c("date", "region","cases","sequences"))
 who_variant_names <- function(x){
-  if(grepl("Alpha|alpha|B.1.1.7",x)){return("Alpha")}
+  if(x=="B.1.1.7"){return("Alpha")}
   else if(grepl("Beta|B.1.351|beta|B.1.351.1|B.1.351.2",x)){return("Beta")}
   else if(grepl("Gamma|gamma|P.1|P.1.1|P.1.2",x)){return("Gamma")}
-  else if(grepl("Delta|delta|B.1.617.2|AY.1|AY.2|AY.3|AY.3.1|AY.",x)){return("Delta")}
+  else if(grepl("Delta|delta|B.1.617.2|AY.1|AY.2|AY.3|AY.3.1|AY.",x,)){return("Delta")}
   else if(grepl("C.37|Lambda|lambda",x)){return("Lambda")}
-  else if(grepl("C.36",x)){return("C.36*")}
+  #else if(grepl("C.36",x)){return("C.36*")}
   else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}
   else{return("others")}
   #else if(x =="others"){return("others")}
   #else{return(x)} 
 }
-variants_ch$who_variants <- sapply(variants_ch$variable, who_variant_names)
+#variants_ch$who_variants <- sapply(variants_ch$variable, who_variant_names)
 seq_ch$who_variants <- sapply(seq_ch$pangolinLineage, who_variant_names)
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","B.1.1.318",  "C.36*",  "others")
-variants_ch$who_variants <- factor(variants_ch$who_variants, levels = lev)
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","B.1.1.318", "others")
 seq_ch$who_variants <- factor(seq_ch$who_variants, levels = lev)
-variants_ch$variable <- NULL
+#variants_ch$variable <- NULL
 
 ## Divide Switzerland in 6 regions as following:
 ## region 1 «GE, NE, VD, VS»
@@ -226,8 +233,8 @@ region_names <- function(x){
   else if(x =="5"){return("region_5")}
   else if(x =="6"){return("region_6")}
 }
-variants_ch$region <- sapply(variants_ch$region, region_names)
-variants_ch$region <- factor(variants_ch$region, levels = c("region_1","region_2","region_3","region_4","region_5","region_6","CH"))
+#variants_ch$region <- sapply(variants_ch$region, region_names)
+#variants_ch$region <- factor(variants_ch$region, levels = c("region_1","region_2","region_3","region_4","region_5","region_6","CH"))
 
 
 

@@ -11,9 +11,9 @@ setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#m
 
 seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
 ### binomial confidence intervals, will be showed by week
-#variants_ch$date <- as_date(variants_ch$date)
-#variants_ch$date_num <- as.numeric(variants_ch$date)
-#variants_ch$week <- week(variants_ch$date)
+
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","B.1.1.318",    "others")
+seqch$who_variants <- factor(seqch$who_variants, levels = lev)
 seqch$date <- as_date(seqch$date)
 seqch$date_num <- as.numeric(seqch$date)
 seqch$week <- week(seqch$date)
@@ -78,7 +78,7 @@ variants_ch <- seqch
 #variants_ch$region <- factor(variants_ch$region, levels = c("CH"))
 #variants_ch <- variants_ch[variants_ch$value>0,]
 #variants_ch <- variants_ch[rep(row.names(variants_ch), variants_ch$value), c(2,6,7)]
-#variants_ch$who_variants <- factor(variants_ch$who_variants, levels = lev)
+variants_ch$who_variants <- factor(variants_ch$who_variants, levels = lev)
 
 ## regional data
 variants_reg <- variants_reg[grepl("egion",variants_reg$region),]
@@ -87,7 +87,7 @@ variants_reg$region <- gsub("r","R", variants_reg$region)
 variants_reg$region <- factor(variants_reg$region, levels = c("Region 1","Region 2","Region 3","Region 4","Region 5","Region 6"))
 #variants_reg <- variants_reg[variants_reg$value>0,]
 #variants_reg <- variants_reg[rep(row.names(variants_reg), variants_reg$value), c(2,6,7)]
-#variants_reg$who_variants <- factor(variants_reg$who_variants, levels = lev)
+variants_reg$who_variants <- factor(variants_reg$who_variants, levels = lev)
 #variants_reg$region <- factor(variants_reg$region, levels = c("Region 1","Region 2","Region 3","Region 4","Region 5","Region 6"))
 
 
@@ -104,7 +104,7 @@ predict.eff_date <- cbind(predict_date, melt(predict.eff_date$prob), melt(predic
 predict.eff_date <- predict.eff_date[,-c(2,5,6,8,9)]
 colnames(predict.eff_date) <- c("date_num","who_variants", "prob","lower", "upper")
 predict.eff_date$who_variants <- gsub("prob.", "", predict.eff_date$who_variants)
-predict.eff_date$who_variants <- sapply(predict.eff_date$who_variants, who_variant_names)
+#predict.eff_date$who_variants <- sapply(predict.eff_date$who_variants, who_variant_names)
 #table(predict.eff_date$who_variants)
 predict.eff_date$who_variants <- factor(predict.eff_date$who_variants, levels = lev)
 predict.eff_date$date <- as_date(predict.eff_date$date_num)
@@ -121,7 +121,7 @@ predict.eff_date_reg <- cbind(predict_date_reg[,c(1,2)],melt(predict.eff_date_re
 predict.eff_date_reg <- predict.eff_date_reg[,-c(3,6,7,9,10)]
 colnames(predict.eff_date_reg) <- c("date_num","region", "who_variants", "prob","lower", "upper")
 predict.eff_date_reg$who_variants <- gsub("prob.", "", predict.eff_date_reg$who_variants)
-predict.eff_date_reg$who_variants <- sapply(predict.eff_date_reg$who_variants, who_variant_names)
+#predict.eff_date_reg$who_variants <- sapply(predict.eff_date_reg$who_variants, who_variant_names)
 #table(predict.eff_date_reg$who_variants)
 predict.eff_date_reg$who_variants <- factor(predict.eff_date_reg$who_variants, levels = lev)
 predict.eff_date_reg$region <- factor(predict.eff_date_reg$region, levels = c("Region 1","Region 2","Region 3","Region 4","Region 5","Region 6"))
@@ -134,6 +134,12 @@ remove(mnom_date_spline)
 ### Figures
 ## prepare ploting:
 col_9 <- (brewer.pal(9,"Set1"))
+
+#Alpha Beta Gamma Delta Lambda B.1.1.318 C.36* others
+col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#5e294e", "#999945","#b1cc8b", "#5e5e5d")
+#Alpha Beta Gamma Delta Lambda B.1.1.318  others
+col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#5e294e", "#999945", "#5e5e5d")
+
 
 yscaling <- function(l) {
   l <- format(l, scientific = TRUE)
@@ -162,12 +168,12 @@ variants_plot_model <- ggplot() +
   geom_ribbon(data=predict.eff_date, aes(x = date, y = prob, ymin = lower,ymax = upper,fill=who_variants),alpha=0.4)+
   geom_errorbar(data= variant_week[na.omit(variant_week$region=="CH"),], aes(x = week_day, ymin=lower, ymax=upper, color = who_variants), width=.1) +
   geom_point(data= variant_week[na.omit(variant_week$region=="CH"),],aes(x = week_day, y=conf, color = who_variants))+
-  geom_rect(aes(xmin = as_date(max(seqch$date)), ymin = 0, xmax = time_window[2], ymax = 1), fill= col_9[9], colour= "transparent", alpha=0.4)+
+  geom_rect(aes(xmin = as_date(max(seqch$date)), ymin = 0, xmax = time_window[2], ymax = 1), fill= "#e8e8e8", colour= "transparent", alpha=0.4)+
   scale_x_date(date_breaks = "1 month", 
                date_labels = "%b",
                limits = as_date(c(time_window[1],time_window[2]+1)))+
-  scale_color_manual(values= col_9[2:9],name="SARS-CoV-2 variants") +
-  scale_fill_manual(values= col_9[2:9],name="SARS-CoV-2 variants") +
+  scale_color_manual(values= col_9,name="SARS-CoV-2 variants") +
+  scale_fill_manual(values= col_9,name="SARS-CoV-2 variants") +
   theme_minimal()+
   theme(plot.subtitle = element_text(hjust = 0.5),
         axis.title.y = element_text(size = 10),
@@ -189,12 +195,12 @@ regional_variants_plot_model <- ggplot(predict.eff_date_reg) +
   geom_ribbon(data= predict.eff_date_reg, aes(x= date, ymin = lower,ymax = upper,fill=who_variants),alpha=0.4)+
   geom_errorbar(data= variant_week[na.omit(variant_week$region!="CH"),], aes(x = week_day, ymin=lower, ymax=upper, color = who_variants), width=.1) +
   geom_point(data= variant_week[na.omit(variant_week$region!="CH"),],aes(x = week_day, y=conf, color = who_variants))+#, size = conf
-  geom_rect(aes(xmin = as_date(max(seqch$date)), ymin = 0, xmax = time_window[2], ymax = 1), fill= col_9[9], colour= "transparent", alpha=0.008)+
+  geom_rect(aes(xmin = as_date(max(seqch$date)), ymin = 0, xmax = time_window[2], ymax = 1), fill= "#e8e8e8", colour= "transparent", alpha=0.008)+
   scale_x_date(date_breaks = "1 month", 
                date_labels = "%b",
                limits = as_date(c(time_window[1],time_window[2]+15)))+
-  scale_color_manual(values= col_9[2:9],name="SARS-CoV-2 variants") +
-  scale_fill_manual(values= col_9[2:9],name="SARS-CoV-2 variants") +
+  scale_color_manual(values= col_9,name="SARS-CoV-2 variants") +
+  scale_fill_manual(values= col_9,name="SARS-CoV-2 variants") +
   theme_minimal()+
   theme(legend.position = "none",
         axis.title.y = element_text(size = 10),
