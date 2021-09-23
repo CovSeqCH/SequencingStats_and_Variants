@@ -54,7 +54,7 @@ Create table with all calendar weeks whose Monday occurs in May `/tables/2021-05
 ./main.py --tables --start-date 2021-05-01 --end-date 2021-06-01 --output-dir 2021-05 
 ```
 
-## Output (for June)
+## Output
 ![plot](./plots/2021-08/png/sequence_share_CH.png)
 ![plot](./plots/2021-08/png/sequence_share_regions.png)
 ![plot](./plots/2021-08/png/sequences_regions.png)
