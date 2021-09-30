@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import os
+import datetime as dt
 from .variant_to_pango import variant_to_lineage
 # from variant_to_pango import variant_to_lineage
 
@@ -30,12 +31,17 @@ def save_fig(fig, output_dir, filename):
 
 def generate_plots(df, output_dir):
     data = df[df.region == 0]
+
+    today = dt.date.today()
+    monday_4_weeks_ago = today + dt.timedelta(days=-today.weekday(), weeks=-5)
+
     fig, ax1 = plt.subplots()
     ax1.plot(data.index, data.sequences/data.cases, label='Fraction sequenced')
     ax1.set_ylim(0,)
-    ax1.set_title("Swiss sequences by calendar week")
+    ax1.set_title("Swiss sequences by calendar week of sample")
     ax1.set_ylabel("Fraction sequenced")
-    ax1.set_xlabel("Calendar week")
+    ax1.set_xlabel(f"Sampling date (Calendar week) - Generated: {today}")
+    ax1.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
     ax1.legend(loc=3)
     ax2 = ax1.twinx()
     ax2.plot(data.index, data.sequences,
@@ -45,6 +51,7 @@ def generate_plots(df, output_dir):
     ax2.set_ylabel("Number of sequences")
     ax2.set_ylim(0,)
     ax2.legend(loc=4)
+    ax1.set_xlim(df.index.min(), df.index.max())
     ax1.set_xticks(data.index)
     ax1.xaxis.set_major_formatter(mdates.DateFormatter('%-W'))
     save_fig(fig, output_dir, 'sequence_share_CH')
@@ -54,11 +61,13 @@ def generate_plots(df, output_dir):
         data = df[df.region == i]
         ax.plot(data.index, data.sequences/data.cases, label=f'Region {i}')
     ax.axhline(0.1, ls=':')
+    ax.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
     ax.set_title(
-        "Proportion of sequenced cases by week and surveillance region")
-    ax.set_ylabel("Proportion of sequenced cases")
-    ax.set_xlabel("Calendar week")
+        "Case fraction sequenced by sample week and surveillance region")
+    ax.set_ylabel("Proportion of cases sequenced")
+    ax.set_xlabel(f"Sampling date (Calendar week) - Generated: {today}")
     ax.set_ylim(0,)
+    ax.set_xlim(df.index.min(), df.index.max())
     ax.legend()
     ax.set_xticks(data.index)
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%-W'))
@@ -68,10 +77,12 @@ def generate_plots(df, output_dir):
     for i in range(1, 7):
         data = df[df.region == i]
         ax.plot(data.index, data.sequences, label=f'Region {i}')
-    ax.set_title("Sequenced cases by week and surveillance region")
+    ax.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
+    ax.set_title("Sequenced cases by sample week and surveillance region")
     ax.set_ylabel("Total number of sequences")
-    ax.set_xlabel("Calendar week")
+    ax.set_xlabel(f"Sampling date (Calendar week) - Generated: {today}")
     ax.set_ylim(0,)
+    ax.set_xlim(df.index.min(), df.index.max())
     ax.legend()
     ax.set_xticks(data.index)
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%-W'))
@@ -82,10 +93,12 @@ def generate_plots(df, output_dir):
     for key in variant_to_lineage.keys():
         ax.plot(data.index, data[key]/data.sequences,
                 label=key)
-    ax.set_title("Fraction of variants by week in Switzerland")
+    ax.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
+    ax.set_title("Fraction of variants by sample week in Switzerland")
     ax.set_ylabel("Fraction of sequences")
-    ax.set_xlabel("Calendar week")
+    ax.set_xlabel(f"Sampling date (Calendar week) - Generated: {today}")
     ax.set_ylim(0,)
+    ax.set_xlim(df.index.min(), df.index.max())
     ax.legend()
     ax.set_xticks(data.index)
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%-W'))
@@ -96,11 +109,13 @@ def generate_plots(df, output_dir):
     for key in variant_to_lineage.keys():
         ax.plot(data.index, data[key]/data.sequences*data.cases,
                 label=key)
+    ax.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
     ax.set_title(
         "Estimated number of cases per week per variant in Switzerland")
     ax.set_ylabel("Estimated number of cases (fraction x cases)")
-    ax.set_xlabel("Calendar week")
+    ax.set_xlabel(f"Sampling date (Calendar week) - Generated: {today}")
     ax.set_ylim(0,)
+    ax.set_xlim(df.index.min(), df.index.max())
     ax.legend()
     ax.set_xticks(data.index)
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%-W'))
