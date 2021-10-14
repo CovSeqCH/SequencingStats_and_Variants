@@ -33,7 +33,7 @@ def generate_plots(df, output_dir):
     data = df[df.region == 0]
 
     today = dt.date.today()
-    monday_4_weeks_ago = today + dt.timedelta(days=-today.weekday(), weeks=-5)
+    monday_4_weeks_ago = today + dt.timedelta(days=-today.weekday(), weeks=-4)
 
     fig, ax1 = plt.subplots()
     ax1.plot(data.index, data.sequences/data.cases, label='Fraction sequenced')
