@@ -55,12 +55,12 @@ Create table with all calendar weeks whose Monday occurs in May `/tables/2021-05
 ```
 
 ## Output
-![plot](./plots/2021-08/png/sequence_share_CH.png)
-![plot](./plots/2021-08/png/sequence_share_regions.png)
-![plot](./plots/2021-08/png/sequences_regions.png)
-![plot](./plots/2021-08/png/variant_share_CH.png)
-![plot](./plots/2021-08/png/variant_estimate_CH.png)
-![plot](./plots/2021-08/png/variant_map.png)
+![plot](./plots/2021-09/png/sequence_share_CH.png)
+![plot](./plots/2021-09/png/sequence_share_regions.png)
+![plot](./plots/2021-09/png/sequences_regions.png)
+![plot](./plots/2021-09/png/variant_share_CH.png)
+![plot](./plots/2021-09/png/variant_estimate_CH.png)
+![plot](./plots/2021-09/png/variant_map.png)
 
 
 ## Maintenance
