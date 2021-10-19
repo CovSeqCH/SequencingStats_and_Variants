@@ -4,7 +4,7 @@ set -x
 # Download and wrangle data
 rm temp.txt
 # Create plots and tables for March to May
-month=3
+month=2
 for filename in tables/*/*
 do
   sed -n "2 s/.*/$month,&/p" $filename >> temp.txt
