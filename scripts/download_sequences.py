@@ -73,7 +73,14 @@ def generate_csv():
     variants_by_week.to_csv('data/variants_by_week.csv')
     # variants_by_week.set_index('date')
     recent_common_variants = variants_by_week[-10:].sum(axis=0)[1:].sort_values(ascending=False)[0:50]
-    variants_by_week.to_csv('data/recent_common_variants_by_week.csv',columns=recent_common_variants.index)
+    variants_by_week['total'] = variants_by_week.sum(axis=1)
+    variants_by_week['others'] = variants_by_week['total'] - variants_by_week[recent_common_variants.index].sum(axis=1)
+    print(variants_by_week)
+    list_of_common_variants = recent_common_variants.index.tolist()
+    variants_by_week['total_common'] = variants_by_week[list_of_common_variants].sum(axis=1)
+    variants_by_week['others'] = variants_by_week['total'] - variants_by_week['total_common']
+    list_of_common_variants.extend(['others','total'])
+    print(list_of_common_variants)
+    variants_by_week.to_csv('data/recent_common_variants_by_week.csv',columns=list_of_common_variants)
     variants_by_week.div(variants_by_week.sum(axis=1), axis=0).to_csv('data/recent_common_variants_by_week_relative.csv',columns=recent_common_variants.index,float_format='%.4f')
-    variants_by_week.to_csv('data/recent_common_variants_by_week.csv',columns=recent_common_variants.index,float_format='%.4f')
     # seq_and_cases.xs(1, level='region')[-10:]
