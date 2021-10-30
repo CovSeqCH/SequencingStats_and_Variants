@@ -15,7 +15,7 @@ def generate_csv():
                 'fields': 'date,division,pangolinLineage,submittingLab'}
     r = requests.get(url, params)
     df = pd.read_json(r.content)
-    df.to_csv('data/response.csv')
+    # df.to_csv('data/response.csv')
     # Unroll the count compression, one row per sample
     # df = df.loc[df.index.repeat(df['count'])]  # %%
     df = df.set_index('date')
@@ -75,12 +75,12 @@ def generate_csv():
     recent_common_variants = variants_by_week[-10:].sum(axis=0)[1:].sort_values(ascending=False)[0:50]
     variants_by_week['total'] = variants_by_week.sum(axis=1)
     variants_by_week['others'] = variants_by_week['total'] - variants_by_week[recent_common_variants.index].sum(axis=1)
-    print(variants_by_week)
+    # print(variants_by_week)
     list_of_common_variants = recent_common_variants.index.tolist()
     variants_by_week['total_common'] = variants_by_week[list_of_common_variants].sum(axis=1)
     variants_by_week['others'] = variants_by_week['total'] - variants_by_week['total_common']
     list_of_common_variants.extend(['others','total'])
-    print(list_of_common_variants)
+    print(f"Most common lineages: {list_of_common_variants}")
     variants_by_week.to_csv('data/recent_common_variants_by_week.csv',columns=list_of_common_variants)
     variants_by_week.div(variants_by_week.sum(axis=1), axis=0).to_csv('data/recent_common_variants_by_week_relative.csv',columns=recent_common_variants.index,float_format='%.4f')
     # seq_and_cases.xs(1, level='region')[-10:]
