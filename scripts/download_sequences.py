@@ -109,7 +109,7 @@ def generate_csv():
     variants_by_week.to_csv(
         "data/recent_common_variants_by_week.csv", columns=list_of_common_variants
     )
-    variants_by_week.div(variants_by_week.sum(axis=1), axis=0).to_csv(
+    variants_by_week.div(variants_by_week["total"], axis=0).to_csv(
         "data/recent_common_variants_by_week_relative.csv",
         columns=recent_common_variants.index,
         float_format="%.4f",
