@@ -26,15 +26,6 @@ jobs:
       - name: download new data
         run: python main.py -d
           
-      - name: commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git commit -m "update data" -a
-          
-      - name: push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+      - name: commit updates 
+        uses: stefanzweifel/git-auto-commit-action@v4
+        
