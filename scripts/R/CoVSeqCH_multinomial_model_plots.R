@@ -12,7 +12,10 @@ setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#m
 seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
 ### binomial confidence intervals, will be showed by week
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","B.1.1.318",    "others")
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","B.1.1.318","others")
+#lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "others", "undetermined")
+seqch <- seqch[seqch$who_variants %in% lev,]
+
 seqch$who_variants <- factor(seqch$who_variants, levels = lev)
 seqch$date <- as_date(seqch$date)
 seqch$date_num <- as.numeric(seqch$date)
@@ -219,6 +222,10 @@ regional_variants_plot_model_log <- regional_variants_plot_model+
 com_regional_ch_variants<- grid.arrange(variants_plot_model, variants_plot_model_log, 
                                         variants_legend,regional_variants_plot_model, 
                                         regional_variants_plot_model_log, nrow = 2)
+
+period_date <- period(Sys.Date())
+period_days <- seq(period_date[1], period_date[2],1)
+
 ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 18,  bg = "transparent")
 ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 18,  bg = "transparent")
 

@@ -9,9 +9,16 @@ source("./scripts/R/CoVSeqCH_data.R")
 
 BAG_data <- subset(BAG_data, as_date(date) %in% seq(period_date[1],period_date[2],1))
 seqch <- subset(seq_ch, as_date(date) %in% seq(period_date[1],period_date[2],1))
+#seqch1 <- subset(seq_ch1, as_date(date) %in% seq(period_date[1],period_date[2],1))
+
+seqch_undetermined <- seqch[seqch$who_variants %in% "undetermined",]
+seqch <- seqch[!seqch$who_variants %in% "undetermined",]
+
+#test_seq  <- subset(seq_ch, as_date(date) %in% seq(as_date("2021-08-30"),as_date("2021-10-03"),1))
+
 
 ### Supplementary table creation:
-table <- as.data.frame(matrix(ncol=25, nrow= 33))
+table <- as.data.frame(matrix(ncol=26, nrow= 33))
 rownames(table) <- c("CH",
                      "region_1",
                      unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_1"])),
@@ -241,18 +248,18 @@ for (c in unname(unlist(rownames(table)))){
     table[,21][rownames(table) == c] <- "-"
   }
   
-  # Number of C.36* 
+  # Number of Mu 
   if(grepl("CH", c)){
-    table[,22][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "C.36*"]))
+    table[,22][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "Mu"]))
   }
   else if(grepl("region", c)){
-    table[,22][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "C.36*"]))
+    table[,22][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "Mu"]))
   }
   else{
-    table[,22][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "C.36*"]))
+    table[,22][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Mu"]))
   }
   
-  # Proportion of  C.36* to all sequences
+  # Proportion of  Mu to all sequences
   if(table[,22][rownames(table) == c]!=0 & !is.na(table[,22][rownames(table) == c])){
     interval <- binom.test(as.numeric(table[,22][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,23][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
@@ -286,6 +293,17 @@ for (c in unname(unlist(rownames(table)))){
   else{
     table[,25][rownames(table) == c] <- "-"
   }
+  # Number of "undetermined"
+  if(grepl("CH", c)){
+    table[,26][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$country %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+  }
+  else if(grepl("region", c)){
+    table[,26][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$region %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+  }
+  else{
+    table[,26][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$canton %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+  }
+  
 }
 
 colnames(table) <- c("Population size",
@@ -299,8 +317,9 @@ colnames(table) <- c("Population size",
                      "Delta","Percentage Delta (95% CI)",
                      "Lambda","Percentage Lambda (95% CI)",
                      "B.1.1.318","Percentage B.1.1.318 (95% CI)",
-                     "C.36*","Percentage C.36* (95% CI)",
-                     "Other variants","Percentage other variants (95% CI)")
+                     "Mu","Percentage Mu (95% CI)",
+                     "Other variants","Percentage other variants (95% CI)",
+                     "Undetermined sequences, excluded from further analysis")
 #sum(table$`Confirmed cases`[grepl("region",rownames(table))])==sum(table$`Confirmed cases`[grepl("CH",rownames(table))])
 #sum(seqch$canton=="Unknown")+sum(table$`Sequenced samples`[grepl("region",rownames(table))])==sum(table$`Sequenced samples`[grepl("CH",rownames(table))])# 
 
@@ -322,8 +341,12 @@ rownames(table) <- c("Switzerland overall",
 
 table[is.na(table)] <- "-"
 # output table:
+period_date1 <- period_date
+period_date <- period(Sys.Date())
+period_days <- seq(period_date[1], period_date[2],1)
+
 perioddate <- paste0(unique(format(period_date, format="%b")),collapse = "_")
-write.xlsx(table, paste0("./tables/",format(period_date[2],"%Y-%m"),"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("Report from ",period_date[1], " to ", period_date[2]), 
+write.xlsx(table, paste0("./tables/",format(period_date[2],"%Y-%m"),"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("Report from ",period_date1[1], " to ", period_date1[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)
 
 

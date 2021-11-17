@@ -70,21 +70,16 @@ BAG_test_canton[is.na(BAG_test_canton)] <- 0
 BAG_Re_canton <- read.csv("./temp_data/data/COVID19Re_geoRegion.csv")
 BAG_Re_canton <- BAG_Re_canton[BAG_Re_canton$geoRegio %in% cantons_ch,]
 
-#BAG_vaccine_canton <- read.csv("./temp_data/data/COVID19FullyVaccPersons_indication_w.csv")
-#colnames(BAG_vaccine_canton)[4] <- "fulvacc_num"
-#BAG_vaccine_canton <- BAG_vaccine_canton[BAG_vaccine_canton$geoRegio %in% cantons_ch,]
 BAG_data <- c()
 BAG_data <- merge(BAG_cases_canton[,c("date","geoRegion","cases_num", "pop")], BAG_test_canton[,c("date","geoRegion","tests_num", "tests_pos_num")],by=c("date","geoRegion"), all=TRUE )
 BAG_data <- merge(BAG_data, BAG_Re_canton[,c("date","geoRegion", "median_R_mean", "median_R_highHPD", "median_R_lowHPD")],by=c("date","geoRegion"), all=TRUE )
 BAG_data <- BAG_data[!is.na(BAG_data$cases_num),]
-#BAG_data <- merge(BAG_data, BAG_vaccine_canton[,c("date","geoRegion", "fulvacc_num")],by=c("date","geoRegion"), all=TRUE )
 
 unlink("temp_data", recursive = TRUE)
 unlink(paste0("covid19_bag_", Sys.Date(),".zip"), recursive = TRUE)
 remove(BAG_cases_canton)
 remove(BAG_test_canton)
 remove(BAG_Re_canton)
-#remove(BAG_vaccine_canton)
 remove(BAG_test_canton_antig)
 remove(BAG_test_canton_pcr)
 
@@ -92,12 +87,17 @@ remove(BAG_test_canton_pcr)
 #variants_ch <- read.csv("https://raw.githubusercontent.com/CovSeqCH/SequencingStats_and_Variants/cr-dev/data/cases_seq_by_day_region.csv")
 
 # new to get sequence data incl. canton:
-url <- GET("https://cov-spectrum.ethz.ch/api/resource/sample2?country=Switzerland&fields=date,division,pangolinLineage")
-jsonRespParsed<-content(url,as="parsed") 
+#url <- GET("https://cov-spectrum.ethz.ch/api/resource/sample2?country=Switzerland&fields=date,division,pangolinLineage")
+url <- GET("https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage")#Used since 17 Nov 2021
+jsonRespParsed<- content(url,as="parsed", encoding="UTF-8") 
 seq_ch <- jsonRespParsed%>%bind_rows#%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
+seq_ch <- seq_ch[1:4]
+#seq_ch1 <- jsonRespParsed%>%bind_rows%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
+
+seq_ch <- seq_ch[seq_ch$count>0&!is.na(seq_ch$count),]
 seq_ch$country <- "CH"
 seq_ch <- seq_ch[rep(row.names(seq_ch), seq_ch$count), c(1,2,3,5)]
-seq_ch <- seq_ch[!is.na(seq_ch$pangolinLineage),]
+#seq_ch <- seq_ch[!is.na(seq_ch$pangolinLineage),]
 
 remove(url)
 remove(jsonRespParsed)
@@ -122,6 +122,18 @@ period <- function(x) {
 period_date <- period(Sys.Date())
 period_days <- seq(period_date[1], period_date[2],1)
 
+if(period_date[2]=="2021-09-30"){ #for September
+period_date <- c(as_date("2021-08-30"), as_date("2021-10-03"))
+period_days <- seq(period_date[1], period_date[2],1)
+}
+
+
+# after September starting looking at weeks not 1st to last date of month:
+period_date <- c(floor_date(as.Date(period_date[1], "%m/%d/%Y"), unit="week"), floor_date(as.Date(period_date[2], "%m/%d/%Y"), unit="week"))
+period_days <- seq(period_date[1], period_date[2],1)
+
+
+
 #variants_ch <- subset(variants_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))#Sys.Date()-14
 BAG_data <- subset(BAG_data, as_date(date) %in% seq(time_window[1],time_window[2],1))
 seq_ch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))
@@ -130,22 +142,26 @@ seq_ch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],time_window[2],1)
 ### renaming functions / variables generation
 ## Renaming variants according to WHO
 #variants_ch <- melt(variants_ch, id.vars=c("date", "region","cases","sequences"))
+
 who_variant_names <- function(x){
-  if(x=="B.1.1.7"){return("Alpha")}
-  else if(grepl("Beta|B.1.351|beta|B.1.351.1|B.1.351.2",x)){return("Beta")}
-  else if(grepl("Gamma|gamma|P.1|P.1.1|P.1.2",x)){return("Gamma")}
-  else if(grepl("Delta|delta|B.1.617.2|AY.1|AY.2|AY.3|AY.3.1|AY.",x,)){return("Delta")}
+  if(is.na(x)){return("undetermined")}
+  else if(grepl("Alpha|alpha|B.1.1.7|Q.1|Q.2|Q.3|Q.4|Q.6",x,useBytes = TRUE)){return("Alpha")}
+  else if(grepl("Beta|beta|B.1.351|B.1.351.1|B.1.351.2",x,useBytes = TRUE)){return("Beta")}
+  else if(grepl("Gamma|gamma|P.1|P.1.1|P.1.2|P.1.3|P.1.4|P.1.5|P.1.6",x,useBytes = TRUE)){return("Gamma")}
+  else if(grepl("Delta|delta|B.1.617.2|AY.1.1|AY.2|AY.3|AY.3.1|AY.4|AY.5|AY.5.1|AY.5.2|AY.6|AY.7|AY.7.1|AY.7.2|AY.8|AY.9|AY.10|AY.11|AY.12|AY.13|AY.14|AY.15|AY.16|AY.17|AY.18|AY.19|AY.20|AY.21|AY.22|AY.23|AY.24|AY.25|AY.26|AY.27|AY.28|AY.29|AY.30|AY.31|AY.32|AY.33|AY.34|AY.35|AY.36|AY.37",x,useBytes = TRUE)){return("Delta")}
   else if(grepl("C.37|Lambda|lambda",x)){return("Lambda")}
   #else if(grepl("C.36",x)){return("C.36*")}
-  else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}
+  else if(grepl("Mu|mu|B.1.621|B.1.621.1|B.1.621.2|B.1.621.3",x,useBytes = TRUE)){return("Mu")}#useBytes = FALSE
+  else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}#,useBytes = FALSE
   else{return("others")}
   #else if(x =="others"){return("others")}
   #else{return(x)} 
 }
+#https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
 #variants_ch$who_variants <- sapply(variants_ch$variable, who_variant_names)
-seq_ch$who_variants <- sapply(seq_ch$pangolinLineage, who_variant_names)
+seq_ch$who_variants <- sapply(seq_ch$pangoLineage, who_variant_names)#seq_ch$pangolinLineage
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","B.1.1.318", "others")
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "others", "undetermined")
 seq_ch$who_variants <- factor(seq_ch$who_variants, levels = lev)
 #variants_ch$variable <- NULL
 
@@ -168,9 +184,9 @@ from_cantons_to_abrev <- function(x){
   else if(grepl("Nidwalden|NW|Nw",x)){return("NW")}
   else if(grepl("Obwalden|Obwald|OW|Ow",x)){return("OW")}
   else if(grepl("Schaffhausen|Schaffhouse|SH|Sh",x)){return("SH")}
-  else if(grepl("Solothurn|SO|So",x)){return("SO")}
-  else if(grepl("Schwyz|SZ|Sz",x)){return("SZ")}
-  else if(grepl("Thurgau|Turgovia|TG|Tg",x)){return("TG")}
+  else if(grepl("Solothurn|Olten|SO|So",x)){return("SO")}
+  else if(grepl("Schwyz|Schwytz|SZ|Sz",x)){return("SZ")}
+  else if(grepl("Thurgau|Turgovia|Thurgovie|TG|Tg",x)){return("TG")}
   else if(grepl("Ticino|Tessin|TI|Ti",x)){return("TI")}
   else if(grepl("Uri|UR|Ur",x)){return("UR")}
   else if(grepl("Vaud|Waadt|VD|Vd|Lausanne|Yverdon-les-Bains",x)){return("VD")}
