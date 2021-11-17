@@ -341,19 +341,21 @@ rownames(table) <- c("Switzerland overall",
 
 table[is.na(table)] <- "-"
 # output table:
-period_date1 <- period_date
-period_date <- period(Sys.Date())
-period_days <- seq(period_date[1], period_date[2],1)
+#period_date1 <- period_date
+#period_date <- period(Sys.Date())
+#period_days <- seq(period_date[1], period_date[2],1)
 
 perioddate <- paste0(unique(format(period_date, format="%b")),collapse = "_")
-write.xlsx(table, paste0("./tables/",format(period_date[2],"%Y-%m"),"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("Report from ",period_date1[1], " to ", period_date1[2]), 
+write.xlsx(table, paste0("./tables//2021-",month_start,"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("Report from ",period_date[1], " to ", period_date[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)
 
 
 table <- table[grepl("Region|Switzerland", rownames(table)),]
 table<- table[,c(8:25)]
 
-write.xlsx(table, paste0("./tables/",format(period_date[2],"%Y-%m"),"/regional_table_",perioddate,".xlsx"),sheetName=paste0("Report from ",period_date[1], " to ", period_date[2]), 
+write.xlsx(table, paste0("./tables/2021-",month_start,"/regional_table_",perioddate,".xlsx"),sheetName=paste0("Report from ",period_date[1], " to ", period_date[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)
+
+
 remove(table)
 
