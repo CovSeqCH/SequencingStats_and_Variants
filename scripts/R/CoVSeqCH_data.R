@@ -129,7 +129,7 @@ period_days <- seq(period_date[1], period_date[2],1)
 
 
 # after September starting looking at weeks not 1st to last date of month:
-period_date <- c(floor_date(as.Date(period_date[1], "%m/%d/%Y"), unit="week")+1, floor_date(as.Date(period_date[2], "%m/%d/%Y"), unit="week"))
+period_date <- c(ceiling_date(as.Date(period_date[1], "%m/%d/%Y"), unit="week")+1, floor_date(as.Date(period_date[2], "%m/%d/%Y"), unit="week"))
 period_days <- seq(period_date[1], period_date[2],1)
 
 
