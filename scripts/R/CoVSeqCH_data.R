@@ -91,7 +91,7 @@ remove(BAG_test_canton_pcr)
 url <- GET("https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage")#Used since 17 Nov 2021
 jsonRespParsed<- content(url,as="parsed", encoding="UTF-8") 
 seq_ch <- jsonRespParsed%>%bind_rows#%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
-seq_ch <- seq_ch[1:4]
+seq_ch <- seq_ch[,c("date","division","pangoLineage","count")]
 #seq_ch1 <- jsonRespParsed%>%bind_rows%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
 
 seq_ch <- seq_ch[seq_ch$count>0&!is.na(seq_ch$count),]
@@ -104,15 +104,19 @@ remove(jsonRespParsed)
 
 ### prepare data / data cleaning:
 month_end <- as.numeric(format(Sys.Date(),"%m"))
-if(month_end+1>9){
+if(month_end+1>9 &month_end+1<13){
   time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
+  
+}
+if(month_end+1==13){
+  time_window <- c(as_date("2021-01-01"), as_date(paste0("2022-01-01"))-1)
   
 }
 if(month_end+1<10){
   time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-0", month_end+1,"-01"))-1)
   
 }
-time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
+#time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
 month_start <- format(as.numeric(format(Sys.Date(),"%m"))-1, format="%m")
 month_end <- format(month_end, format="%m")
 period <- function(x) {
@@ -153,6 +157,7 @@ who_variant_names <- function(x){
   #else if(grepl("C.36",x)){return("C.36*")}
   else if(grepl("Mu|mu|B.1.621|B.1.621.1|B.1.621.2|B.1.621.3",x,useBytes = TRUE)){return("Mu")}#useBytes = FALSE
   else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}#,useBytes = FALSE
+  else if(grepl("B.1.1.529|BA.1",x)){return("Omicron")}#,useBytes = FALSE
   else{return("others")}
   #else if(x =="others"){return("others")}
   #else{return(x)} 
@@ -161,7 +166,7 @@ who_variant_names <- function(x){
 #variants_ch$who_variants <- sapply(variants_ch$variable, who_variant_names)
 seq_ch$who_variants <- sapply(seq_ch$pangoLineage, who_variant_names)#seq_ch$pangolinLineage
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "others", "undetermined")
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron", "others", "undetermined")
 seq_ch$who_variants <- factor(seq_ch$who_variants, levels = lev)
 #variants_ch$variable <- NULL
 

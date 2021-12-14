@@ -12,7 +12,7 @@ setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#m
 seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
 ### binomial confidence intervals, will be showed by week
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","B.1.1.318","others")
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "B.1.1.318", "Omicron", "others")
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "others", "undetermined")
 seqch <- seqch[seqch$who_variants %in% lev,]
 
@@ -138,10 +138,9 @@ remove(mnom_date_spline)
 ## prepare ploting:
 col_9 <- (brewer.pal(9,"Set1"))
 
-#Alpha Beta Gamma Delta Lambda B.1.1.318 C.36* others
-col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#5e294e", "#999945","#b1cc8b", "#5e5e5d")
-#Alpha Beta Gamma Delta Lambda B.1.1.318  others
-col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#5e294e", "#999945", "#5e5e5d")
+
+#Alpha Beta Gamma Delta Lambda B.1.1.318  Omicron others
+col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#a83879", "#999945","#754c73", "#5e5e5d")
 
 
 yscaling <- function(l) {
