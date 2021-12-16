@@ -9,8 +9,11 @@ setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#m
 ### load data:
 #source("./scripts/R/CoVSeqCH_data.R")
 
+
 seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
+#seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],Sys.Date(),1))
 ### binomial confidence intervals, will be showed by week
+#time_window <- c("2021-01-01", "2021-01-31")
 
 lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "B.1.1.318", "Omicron", "others")
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "others", "undetermined")
@@ -101,8 +104,8 @@ mnom_date_reg_spline <- multinom(who_variants ~ ns(date_num, df=2) + region, dat
 ## predict for mnom_week model
 predict_date <- data.frame(date_num = seq((min(variants_ch$date_num)),as.numeric(time_window[2]),1))
 
-predict.eff_date <- Effect("date_num", mnom_date_spline,level=0.95,
-                           xlevels=list(date_num=seq(min(variants_ch$date_num),as.numeric(time_window[2]),1)))
+predict.eff_date <- Effect("date_num", mnom_date_spline,level=0.95, xlevels=list(date_num=seq(min(variants_ch$date_num),as.numeric(time_window[2]),1)))
+
 predict.eff_date <- cbind(predict_date, melt(predict.eff_date$prob), melt(predict.eff_date$lower.prob),melt(predict.eff_date$upper.prob))
 predict.eff_date <- predict.eff_date[,-c(2,5,6,8,9)]
 colnames(predict.eff_date) <- c("date_num","who_variants", "prob","lower", "upper")

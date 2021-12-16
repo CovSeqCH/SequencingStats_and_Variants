@@ -131,9 +131,15 @@ period_date <- c(as_date("2021-08-30"), as_date("2021-10-03"))
 period_days <- seq(period_date[1], period_date[2],1)
 }
 
-
 # after September starting looking at weeks not 1st to last date of month:
-period_date <- c(ceiling_date(as.Date(period_date[1], "%m/%d/%Y"), unit="week")+1, floor_date(as.Date(period_date[2], "%m/%d/%Y"), unit="week"))
+if(weekdays( period_date[1])== "Monday"){
+  period_date <- c(period_date[1], floor_date(as.Date(period_date[2], "%m/%d/%Y"), unit="week"))
+  
+}
+if(weekdays( period_date[1])!= "Monday"){
+  period_date <- c(ceiling_date(as.Date(period_date[1], "%m/%d/%Y"), unit="week"), floor_date(as.Date(period_date[2], "%m/%d/%Y"), unit="week"))
+  
+}
 period_days <- seq(period_date[1], period_date[2],1)
 
 
@@ -157,7 +163,7 @@ who_variant_names <- function(x){
   #else if(grepl("C.36",x)){return("C.36*")}
   else if(grepl("Mu|mu|B.1.621|B.1.621.1|B.1.621.2|B.1.621.3",x,useBytes = TRUE)){return("Mu")}#useBytes = FALSE
   else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}#,useBytes = FALSE
-  else if(grepl("B.1.1.529|BA.1",x)){return("Omicron")}#,useBytes = FALSE
+  else if(grepl("B.1.1.529|BA.1|BA.2",x)){return("Omicron")}#,useBytes = FALSE
   else{return("others")}
   #else if(x =="others"){return("others")}
   #else{return(x)} 
