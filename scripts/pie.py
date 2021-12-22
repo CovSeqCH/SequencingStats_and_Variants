@@ -3,13 +3,14 @@ import numpy as np
 import geopandas
 from matplotlib.patches import Patch
 from matplotlib import cm
-from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+from matplotlib.colors import ListedColormap, LinearSegmentedColormap, to_rgb
 from .surveillance_region_map import iso_canton_to_region
 from .variant_to_pango import variant_to_lineage
 import matplotlib.pyplot as plt
 import matplotlib.transforms as transforms
 import matplotlib.patches as mpatches
 from .plots import save_fig
+from .colors import variant_to_color
 
 
 def draw_pie(ratios, colors, x=0, y=0, size=1):
@@ -46,6 +47,9 @@ def generate_variant_map(df, output_dir):
     geo_merge.plot(column='region',
                    figsize=(10, 8), cmap=newcmp)
 
+    variant_names = list(variant_to_lineage.keys())
+    variant_names.append('others')
+
     total_cases = df[df.region == 0].cases.sum()
     for reg in range(1, 7):
         data = df[df.region == reg].sum()
@@ -54,6 +58,11 @@ def generate_variant_map(df, output_dir):
                           np.linspace(0, 0.775, len(variant_to_lineage)+1)))
         if len(variant_to_lineage) == 5:
             colors = [(0.819607843137255, 0.4, 0.4), (1, 0.4, 0.4), (1, 0.701960784313725, 0.701960784313725), (0.4, 0.63921568627451, 0.4), (0.956862745098039, 0.862745098039216, 0.505882352941176),(0,0,0)]
+        
+        for i, variant in enumerate(variant_names):
+            if variant in variant_to_color.keys():
+                colors[i] = to_rgb(variant_to_color[variant])
+        
         for variant in variant_to_lineage.keys():
             ratios.append(data[variant]/data.sequences)
         ratios.append(data['others']/data.sequences)
@@ -63,8 +72,7 @@ def generate_variant_map(df, output_dir):
         draw_pie(ratios, colors, x_val, y_val,
                  size=np.sqrt(data.cases/total_cases))
 
-    variant_names = list(variant_to_lineage.keys())
-    variant_names.append('others')
+
     legend_elements = [Patch(facecolor=color, label=name)
                        for color, name in zip(colors, variant_names)]
 

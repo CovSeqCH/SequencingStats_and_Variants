@@ -4,7 +4,8 @@ import matplotlib.dates as mdates
 import os
 import datetime as dt
 from .variant_to_pango import variant_to_lineage
-# from variant_to_pango import variant_to_lineage
+from matplotlib.colors import to_rgb
+from .colors import variant_to_color
 
 
 def load_data():
@@ -92,7 +93,7 @@ def generate_plots(df, output_dir):
     fig, ax = plt.subplots()
     for key in variant_to_lineage.keys():
         ax.plot(data.index, data[key]/data.sequences,
-                label=key)
+                label=key, color=to_rgb(variant_to_color[key]))
     ax.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
     ax.set_title("Fraction of variants by sample week in Switzerland")
     ax.set_ylabel("Fraction of sequences")
@@ -108,7 +109,7 @@ def generate_plots(df, output_dir):
     fig, ax = plt.subplots()
     for key in variant_to_lineage.keys():
         ax.plot(data.index, data[key]/data.sequences*data.cases,
-                label=key)
+                label=key, color=to_rgb(variant_to_color[key]))
     ax.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
     ax.set_title(
         "Estimated number of cases per week per variant in Switzerland")
