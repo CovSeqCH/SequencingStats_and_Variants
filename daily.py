@@ -16,9 +16,9 @@ default_args = Namespace(
 
 #%%
 # Download data
-download_args = copy.deepcopy(default_args)
-download_args.download = True
-main.main(download_args)
+# download_args = copy.deepcopy(default_args)
+# download_args.download = True
+# main.main(download_args)
 
 #%%
 # Update plot until previous calendar week
