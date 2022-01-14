@@ -45,7 +45,7 @@ def generate_variant_map(df, output_dir):
     newcmp = ListedColormap(ylgn(np.linspace(0.25, 0.75, 256)))
 
     geo_merge.plot(column='region',
-                   figsize=(10, 8), cmap=newcmp)
+                   figsize=(8, 5), cmap=newcmp)
 
     variant_names = list(variant_to_lineage.keys())
     variant_names.append('others')
@@ -63,9 +63,8 @@ def generate_variant_map(df, output_dir):
             if variant in variant_to_color.keys():
                 colors[i] = to_rgb(variant_to_color[variant])
         
-        for variant in variant_to_lineage.keys():
-            ratios.append(data[variant]/data.sequences)
-        ratios.append(data['others']/data.sequences)
+        for variant in variant_names:
+            ratios.append(data[variant]/(data.sequences-data['None']))
         x_val = xy_coords[f'Region {reg}']["x"]
         y_val = xy_coords[f'Region {reg}']["y"]
 
@@ -73,12 +72,13 @@ def generate_variant_map(df, output_dir):
                  size=np.sqrt(data.cases/total_cases))
 
 
-    legend_elements = [Patch(facecolor=color, label=name)
+    legend_elements = [Patch(facecolor=color, label=name.capitalize())
                        for color, name in zip(colors, variant_names)]
 
     plt.title(
-        f'Variants by Region in {df.index[10].strftime("%B %Y")}', size=15)
-    plt.figtext(0.6, 0.2, 'Pie area represents number of cases')
+        f'Variants by Region between CW {df.index[0].strftime("%W-%Y")} and CW {df.index[-2].strftime("%W-%Y")}', size=15)
+    plt.figtext(0.6, 0.05, 'Pie area represents number of cases')
     plt.legend(handles=legend_elements, loc="upper left")
     plt.axis("off")
+    plt.tight_layout()
     save_fig(plt.gcf(), output_dir, 'variant_map')
