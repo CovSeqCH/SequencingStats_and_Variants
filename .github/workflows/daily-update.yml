@@ -2,7 +2,7 @@ name: daily-update
 
 on:
   schedule:
-    - cron: '0 12 * * *'
+    - cron: "14 20 * * *"
   workflow_dispatch:
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9.7'
+          python-version: "3.9.7"
 
       - name: install python packages
         run: |
@@ -28,5 +28,8 @@ jobs:
       - name: query mutations
         run: python scripts/mutation_proportions.py
 
-      - name: commit updates 
+      - name: update latest plots
+        run: python daily.py
+
+      - name: commit updates
         uses: stefanzweifel/git-auto-commit-action@v4

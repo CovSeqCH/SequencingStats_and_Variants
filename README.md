@@ -1,5 +1,35 @@
 # Swiss national Sars-CoV-2 genomic surveillance program: Plots and Tables
 
+![plot](./plots/latest/png/sequence_share_CH.png)
+Figure 1: Total number of sequences produced per the Swiss genomic SARS-CoV-2 surveillance program and fraction of all reported cases
+
+---
+
+![plot](./plots/latest/png/sequence_share_regions.png)
+Figure 2: Fraction of known cases sequenced by surveillance region (definition below)
+
+---
+
+![plot](./plots/latest/png/sequences_regions.png)
+Figure 3: Total number of sequences per calendar week per surveillance region
+
+---
+
+![plot](./plots/latest/png/variant_share_CH.png)
+Figure 4: Variant share per calendar week in Switzerland
+
+---
+
+![plot](./plots/latest/png/variant_estimate_CH.png)
+Figure 5: Estimate of the number of cases by variant
+
+---
+
+![plot](./plots/latest/png/variant_map.png)
+Figure 6: Variant share in the most recent 3 complete calendar weeks by surveillance region
+
+## Description
+
 Command Line Interface program to create plots and tables for the monthly report of the Swiss national Sars-CoV-2 genomic surveillance program.
 
 Sequencing data is obtained from covSpectrum's public API (for docs see <https://github.com/cevo-public/cov-spectrum-docs/blob/develop/API.md>)
@@ -60,14 +90,6 @@ Create table with all calendar weeks whose Monday occurs in May `/tables/2021-05
 ./main.py --tables --start-date 2021-05-01 --end-date 2021-06-01 --output-dir 2021-05 
 ```
 
-## Output
-
-![plot](./plots/2021-11/png/sequence_share_CH.png)
-![plot](./plots/2021-11/png/sequence_share_regions.png)
-![plot](./plots/2021-11/png/sequences_regions.png)
-![plot](./plots/2021-11/png/variant_share_CH.png)
-![plot](./plots/2021-11/png/variant_estimate_CH.png)
-![plot](./plots/2021-11/png/variant_map.png)
 
 ## Maintenance
 
