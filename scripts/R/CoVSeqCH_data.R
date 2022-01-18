@@ -108,7 +108,7 @@ if(month_end+1>9 &month_end+1<13){
   time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
   
 }
-if(month_end+1==13){
+if(month_end==1){
   time_window <- c(as_date("2021-01-01"), as_date(paste0("2022-01-01"))-1)
   
 }
@@ -118,12 +118,18 @@ if(month_end+1<10){
 }
 #time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
 month_start <- format(as.numeric(format(Sys.Date(),"%m"))-1, format="%m")
+if(month_end==1){
+  month_start <- 12
+}
 month_end <- format(month_end, format="%m")
 period <- function(x) {
   c(as_date(format(x, paste0("%Y-",month_start,"-01"))),
     lubridate::floor_date(as_date(format(x, paste0("%Y-",month_end,"-01"))), unit = "month") - 1)
 }
 period_date <- period(Sys.Date())
+if(month_start==12){
+  period_date <- c(as_date("2021-12-01"), as_date("2021-12-31"))
+}
 period_days <- seq(period_date[1], period_date[2],1)
 
 if(period_date[2]=="2021-09-30"){ #for September

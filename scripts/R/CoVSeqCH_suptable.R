@@ -6,7 +6,7 @@
 setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#may need to be adapted
 ### load data:
 source("./scripts/R/CoVSeqCH_data.R")
-
+#period_date <- c(as_date("2021-11-01"), as_date("2021-12-05"))
 BAGdata <- subset(BAG_data, as_date(date) %in% seq(period_date[1],period_date[2],1))
 seqch <- subset(seq_ch, as_date(date) %in% seq(period_date[1],period_date[2],1))
 #seqch1 <- subset(seq_ch1, as_date(date) %in% seq(period_date[1],period_date[2],1))
@@ -87,7 +87,7 @@ for (c in unname(unlist(rownames(table)))){
     table[,7][rownames(table) == c] <- format(round(sum(na.omit(BAGdata$tests_pos_num[BAGdata$region %in% c]))/sum((na.omit(BAGdata$tests_num[BAGdata$region %in% c])))*10^2,2), nsmall = 2)
   }
   else{
-    table[,7][rownames(table) == c] <- format(round(sum(na.omit(BAGdata$tests_pos_num[BAGdata$geoRegion %in% c]))/sum((BAGdata$tests_num[BAGdata$geoRegion %in% c]))*10^2,2), nsmall = 2)
+    table[,7][rownames(table) == c] <- format(round(sum(na.omit(BAGdata$tests_pos_num[BAGdata$geoRegion %in% c]))/sum(na.omit(BAGdata$tests_num[BAGdata$geoRegion %in% c]))*10^2,2), nsmall = 2)
   }
   
   # number of sequenced samples 
@@ -375,12 +375,12 @@ table[is.na(table)] <- "-"
 #period_days <- seq(period_date[1], period_date[2],1)
 
 perioddate <- paste0(unique(format(period_date, format="%b")),collapse = "_")
-write.xlsx(table, paste0("./tables//2021-",month_start,"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("Report from ",period_date[1], " to ", period_date[2]), 
+write.xlsx(table, paste0("./tables//2021-",month_start,"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)
 
 
 table <- table[grepl("Region|Switzerland", rownames(table)),]
-table<- table[,c(8:26)]
+table<- table[,c(8:27)]
 
 write.xlsx(table, paste0("./tables/2021-",month_start,"/regional_table_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)
