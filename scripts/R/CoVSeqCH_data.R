@@ -104,16 +104,17 @@ remove(jsonRespParsed)
 
 ### prepare data / data cleaning:
 month_end <- as.numeric(format(Sys.Date(),"%m"))
+year_end <- as.numeric(format(Sys.Date(),"%Y"))
 if(month_end+1>9 &month_end+1<13){
-  time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
+  time_window <- c(as_date("2021-01-01"), as_date(paste0(year_end, month_end+1,"-01"))-1)
   
 }
-if(month_end==1){
+if(month_end==1 &year_end==2022){
   time_window <- c(as_date("2021-01-01"), as_date(paste0("2022-01-01"))-1)
   
 }
 if(month_end+1<10){
-  time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-0", month_end+1,"-01"))-1)
+  time_window <- c(as_date("2021-01-01"), as_date(paste0(year_end,"-", month_end+1,"-01"))-1)
   
 }
 #time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
@@ -149,7 +150,7 @@ if(weekdays( period_date[1])!= "Monday"){
 period_days <- seq(period_date[1], period_date[2],1)
 
 
-
+time_window[2] <- time_window[2]-1
 #variants_ch <- subset(variants_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))#Sys.Date()-14
 BAG_data <- subset(BAG_data, as_date(date) %in% seq(time_window[1],time_window[2],1))
 seq_ch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))
@@ -169,7 +170,9 @@ who_variant_names <- function(x){
   #else if(grepl("C.36",x)){return("C.36*")}
   else if(grepl("Mu|mu|B.1.621|B.1.621.1|B.1.621.2|B.1.621.3",x,useBytes = TRUE)){return("Mu")}#useBytes = FALSE
   else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}#,useBytes = FALSE
-  else if(grepl("B.1.1.529|BA.1|BA.2",x)){return("Omicron")}#,useBytes = FALSE
+  #else if(grepl("B.1.1.529|BA.1|BA.2",x)){return("Omicron")}#,useBytes = FALSE
+  else if(grepl("BA.2",x)){return("Omicron (BA.2)")}#,useBytes = FALSE
+  else if(grepl("BA.1",x)){return("Omicron (BA.1)")}#,useBytes = FALSE
   else{return("others")}
   #else if(x =="others"){return("others")}
   #else{return(x)} 
@@ -177,8 +180,9 @@ who_variant_names <- function(x){
 #https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
 #variants_ch$who_variants <- sapply(variants_ch$variable, who_variant_names)
 seq_ch$who_variants <- sapply(seq_ch$pangoLineage, who_variant_names)#seq_ch$pangolinLineage
+#lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron", "others", "undetermined")
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron", "others", "undetermined")
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "others", "undetermined")
 seq_ch$who_variants <- factor(seq_ch$who_variants, levels = lev)
 #variants_ch$variable <- NULL
 
@@ -271,8 +275,18 @@ region_names <- function(x){
 
 
 
-
-
+dir_create <- paste0("./plots/",format(as_date(mean(period_date)), format = "%Y-%m"),"/png")
+if (!dir.exists(dir_create)){
+  dir.create(dir_create)
+} 
+dir_create <- paste0("./plots/",format(as_date(mean(period_date)), format = "%Y-%m"),"/pdf")
+if (!dir.exists(dir_create)){
+  dir.create(dir_create)
+} 
+dir_create <- paste0("./tables/",format(as_date(mean(period_date)), format = "%Y-%m"))
+if (!dir.exists(dir_create)){
+  dir.create(dir_create)
+} 
 
 
 

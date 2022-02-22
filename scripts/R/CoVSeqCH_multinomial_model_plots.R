@@ -14,15 +14,17 @@ seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
 #seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],Sys.Date(),1))
 ### binomial confidence intervals, will be showed by week
 #time_window <- c("2021-01-01", "2021-01-31")
-
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "B.1.1.318", "Omicron", "others")
+seqch$who_variants <-  ifelse(seqch$who_variants =="Mu", "others", as.character(seqch$who_variants))
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "others")
+#lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "B.1.1.318", "Omicron", "others")
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "others", "undetermined")
 seqch <- seqch[seqch$who_variants %in% lev,]
 
 seqch$who_variants <- factor(seqch$who_variants, levels = lev)
 seqch$date <- as_date(seqch$date)
 seqch$date_num <- as.numeric(seqch$date)
-seqch$week <- week(seqch$date)
+seqch$week <- paste0(year(seqch$date),"-",week(seqch$date))
+seqch$week <- gsub("53","52", seqch$week)
 
 variant_week <- seqch %>% group_by(week,region,who_variants)  %>% summarise(variants= length(who_variants))
 seq_week <- variant_week %>% group_by(week,region)  %>% summarise(total= sum(variants))
@@ -46,6 +48,8 @@ variant_week <- variant_week[variant_week$total!=0,]
 #variant_week$value <- as.numeric(variant_week$value)
 #variant_week <- variant_week[variant_week$sequences!=0,]
 variant_week$who_variants <- factor(variant_week$who_variants, levels = lev)
+variant_week$week_day <-as.POSIXct( paste(variant_week$week,1,  sep = "-" ), format = "%Y-%U-%u" )
+variant_week$week_day <- as_date(variant_week$week_day)
 
 lower <- numeric()
 upper <- numeric()
@@ -62,11 +66,11 @@ sampled_ci <- function(data){
 }
 variant_week <- sampled_ci(variant_week)
 variant_week <- as.data.frame(variant_week)
-variant_week$week_day <- as_date(as.Date(paste(2021, variant_week$week, 1, sep="-"),format= "%Y-%U-%u"))
+#variant_week$week_day <- as_date(as.Date(paste(variant_week$week, 1, sep="-"),format= "%Y-%U-%u"))
 variant_week$region <- gsub("_"," ", variant_week$region)
 variant_week$region <- gsub("r","R", variant_week$region)
 variant_week$region <- factor(variant_week$region, levels = c("Region 1","Region 2","Region 3","Region 4","Region 5","Region 6", "CH"))
-variant_week$week_day <- as_date(as.Date(paste(2021, variant_week$week, 1, sep="-"), "%Y-%U-%u"))
+#variant_week$week_day <- as_date(as.Date(paste(variant_week$week, 1, sep="-"), "%Y-%U-%u"))
 remove(conf)
 remove(upper)
 remove(lower)
@@ -76,7 +80,7 @@ remove(lower)
 ## reorganize dataset
 #variants_reg <- variants_ch[variants_ch$region!="CH",]
 #variants_ch <- variants_ch[variants_ch$region=="CH",]
-variants_reg <- seqch[seqch$region!="Unknown",]
+variants_reg <- seqch[!seqch$region %in% c("Unknown"),]
 variants_ch <- seqch
 
 
@@ -94,7 +98,7 @@ variants_reg$region <- factor(variants_reg$region, levels = c("Region 1","Region
 #variants_reg <- variants_reg[variants_reg$value>0,]
 #variants_reg <- variants_reg[rep(row.names(variants_reg), variants_reg$value), c(2,6,7)]
 variants_reg$who_variants <- factor(variants_reg$who_variants, levels = lev)
-#variants_reg$region <- factor(variants_reg$region, levels = c("Region 1","Region 2","Region 3","Region 4","Region 5","Region 6"))
+variants_reg$region <- factor(variants_reg$region, levels = c("Region 1","Region 2","Region 3","Region 4","Region 5","Region 6"))
 
 
 ### Different multinomial models:
@@ -110,6 +114,9 @@ predict.eff_date <- cbind(predict_date, melt(predict.eff_date$prob), melt(predic
 predict.eff_date <- predict.eff_date[,-c(2,5,6,8,9)]
 colnames(predict.eff_date) <- c("date_num","who_variants", "prob","lower", "upper")
 predict.eff_date$who_variants <- gsub("prob.", "", predict.eff_date$who_variants)
+predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.2."] <- "Omicron (BA.2)"
+predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.1."] <- "Omicron (BA.1)"
+
 #predict.eff_date$who_variants <- sapply(predict.eff_date$who_variants, who_variant_names)
 #table(predict.eff_date$who_variants)
 predict.eff_date$who_variants <- factor(predict.eff_date$who_variants, levels = lev)
@@ -118,23 +125,37 @@ remove(predict_date)
 
 
 ## predict for mnom_week_reg model
-predict_date_reg <- data.frame(date_num=rep(unique(seq(min(variants_reg$date_num),as.numeric(time_window[2]),1)), length(unique(variants_reg$region))), 
-                               region=rep(levels(variants_reg$region),each=length(unique(seq((min(variants_reg$date_num)),as.numeric(time_window[2]),1)))))
-
 predict.eff_date_reg <- Effect(c("date_num","region"), mnom_date_reg_spline,level=0.95,
                                xlevels=list(date_num=seq(min(variants_reg$date_num),as.numeric(time_window[2]),1)))
-predict.eff_date_reg <- cbind(predict_date_reg[,c(1,2)],melt(predict.eff_date_reg$prob), melt(predict.eff_date_reg$lower.prob),melt(predict.eff_date_reg$upper.prob))
+#predict_date_reg <- data.frame(date_num=rep(unique(seq(min(variants_reg$date_num),as.numeric(time_window[2]),1)), each=length(unique(variants_reg$region))), 
+ #                              region=rep(levels(variants_reg$region),length(unique(seq((min(variants_reg$date_num)),as.numeric(time_window[2]),1)))))
+#predict_date_reg <- data.frame(date_num=rep(unique(seq(min(variants_reg$date_num),as.numeric(time_window[2]),1)), length(unique(variants_reg$region))), 
+ #                              region=rep(levels(variants_reg$region),each=length(unique(seq((min(variants_reg$date_num)),as.numeric(time_window[2]),1)))))
+
+predict_date_reg <- as.data.frame(predict.eff_date_reg$x)
+predict_date_reg <- predict_date_reg[rep(seq_len(nrow(predict_date_reg)), length(lev)),]
+#predict_date_reg[,c(1,2)],
+predict.eff_date_reg <- cbind(melt(predict.eff_date_reg$prob), melt(predict.eff_date_reg$lower.prob),melt(predict.eff_date_reg$upper.prob))
+predict.eff_date_reg <- cbind(predict_date_reg[,c(1,2)],predict.eff_date_reg)
+#predict.eff_date_reg <- cbind(data.frame(predict.eff_date_reg$x)[rep(seq_len(nrow(data.frame(predict.eff_date_reg$x))), each = 9),], melt(predict.eff_date_reg$prob), melt(predict.eff_date_reg$lower.prob),melt(predict.eff_date_reg$upper.prob))
+
 predict.eff_date_reg <- predict.eff_date_reg[,-c(3,6,7,9,10)]
 colnames(predict.eff_date_reg) <- c("date_num","region", "who_variants", "prob","lower", "upper")
 predict.eff_date_reg$who_variants <- gsub("prob.", "", predict.eff_date_reg$who_variants)
 #predict.eff_date_reg$who_variants <- sapply(predict.eff_date_reg$who_variants, who_variant_names)
 #table(predict.eff_date_reg$who_variants)
-predict.eff_date_reg$who_variants <- factor(predict.eff_date_reg$who_variants, levels = lev)
-predict.eff_date_reg$region <- factor(predict.eff_date_reg$region, levels = c("Region 1","Region 2","Region 3","Region 4","Region 5","Region 6"))
+#predict.eff_date_reg$region <- factor(predict.eff_date_reg$region, levels = c("Region 1","Region 2","Region 3","Region 4","Region 5","Region 6"))
 predict.eff_date_reg$date <- as_date(predict.eff_date_reg$date_num)
-remove(predict_date_reg)
+#remove(predict_date_reg)
 
-remove(mnom_date_reg_spline)
+#predict.eff_date_reg$who_variants <- ifelse(predict.eff_date_reg$who_variants =="Omicron..BA.2.", as.character("Omicron (BA.2)"), as.character(predict.eff_date$who_variants))
+#predict.eff_date_reg$who_variants <- ifelse(predict.eff_date_reg$who_variants =="Omicron..BA.1.", as.character("Omicron (BA.1)"), as.character(predict.eff_date$who_variants))
+predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.2."] <- "Omicron (BA.2)"
+predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.1."] <- "Omicron (BA.1)"
+#predict.eff_date_reg$who_variants <- factor(predict.eff_date_reg$who_variants, levels = lev)
+#predict.eff_date_reg$who_variants  <- as.character(predict.eff_date_reg$who_variants )
+predict.eff_date_reg$date <- as_date(predict.eff_date_reg$date_num)
+#remove(mnom_date_reg_spline)
 remove(mnom_date_spline)
 
 ### Figures
@@ -143,7 +164,7 @@ col_9 <- (brewer.pal(9,"Set1"))
 
 
 #Alpha Beta Gamma Delta Lambda B.1.1.318  Omicron others
-col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#a83879", "#999945","#754c73", "#5e5e5d")
+col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#a83879", "#999945","#754c73","#a88da7", "#5e5e5d")
 
 
 yscaling <- function(l) {
@@ -169,9 +190,9 @@ g_legend <- function(a.gplot,num){
 
 ## overall Swiss multi-nominal figure
 variants_plot_model <- ggplot() + 
-  geom_line(data=predict.eff_date, aes(x = date, y = prob, color = who_variants))+
+  geom_line(data=predict.eff_date, aes(x = date, y = prob, color = who_variants))+#predict.eff_date_reg[predict.eff_date_reg$region=="Region 1",]
   geom_ribbon(data=predict.eff_date, aes(x = date, y = prob, ymin = lower,ymax = upper,fill=who_variants),alpha=0.4)+
-  geom_errorbar(data= variant_week[na.omit(variant_week$region=="CH"),], aes(x = week_day, ymin=lower, ymax=upper, color = who_variants), width=.1) +
+  geom_errorbar(data= variant_week[na.omit(variant_week$region=="CH"),], aes(x = week_day, ymin=lower, ymax=upper), width=.1) +
   geom_point(data= variant_week[na.omit(variant_week$region=="CH"),],aes(x = week_day, y=conf, color = who_variants))+
   geom_rect(aes(xmin = as_date(max(seqch$date)), ymin = 0, xmax = time_window[2], ymax = 1), fill= "#e8e8e8", colour= "transparent", alpha=0.4)+
   scale_x_date(date_breaks = "1 month", 
@@ -194,8 +215,9 @@ variants_plot_model_log <- variants_plot_model+
 variants_legend <- g_legend(variants_plot_model,1)
 variants_plot_model <- variants_plot_model + theme(legend.position = "none")
 
-## reginal Swiss multi-nominal figure
-regional_variants_plot_model <- ggplot(predict.eff_date_reg) + 
+## regional Swiss multi-nominal figure
+regional_variants_plot_model <- NULL
+regional_variants_plot_model <-  ggplot(predict.eff_date_reg) + 
   geom_line(data= predict.eff_date_reg, aes(x = date, y = prob, color = who_variants))+
   geom_ribbon(data= predict.eff_date_reg, aes(x= date, ymin = lower,ymax = upper,fill=who_variants),alpha=0.4)+
   geom_errorbar(data= variant_week[na.omit(variant_week$region!="CH"),], aes(x = week_day, ymin=lower, ymax=upper, color = who_variants), width=.1) +
@@ -228,6 +250,6 @@ com_regional_ch_variants<- grid.arrange(variants_plot_model, variants_plot_model
 period_date <- period(Sys.Date())
 period_days <- seq(period_date[1], period_date[2],1)
 
-ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 18,  bg = "transparent")
-ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 18,  bg = "transparent")
+ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 23,  bg = "transparent")
+ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 23,  bg = "transparent")
 
