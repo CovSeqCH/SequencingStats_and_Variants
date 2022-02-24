@@ -14,8 +14,9 @@ seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
 #seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],Sys.Date(),1))
 ### binomial confidence intervals, will be showed by week
 #time_window <- c("2021-01-01", "2021-01-31")
-seqch$who_variants <-  ifelse(seqch$who_variants =="Mu", "others", as.character(seqch$who_variants))
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "others")
+seqch[seqch$who_variants %in% "Mu"] <- "others"
+seqch[seqch$who_variants  %in% "B.1.1.318"] <- "others"
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "Omicron (BA.1)","Omicron (BA.2)", "others")
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "B.1.1.318", "Omicron", "others")
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "others", "undetermined")
 seqch <- seqch[seqch$who_variants %in% lev,]
@@ -164,7 +165,7 @@ col_9 <- (brewer.pal(9,"Set1"))
 
 
 #Alpha Beta Gamma Delta Lambda B.1.1.318  Omicron others
-col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#a83879", "#999945","#754c73","#a88da7", "#5e5e5d")
+col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#a83879","#754c73","#a88da7", "#5e5e5d")#, "#999945"
 
 
 yscaling <- function(l) {
