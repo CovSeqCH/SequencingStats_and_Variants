@@ -72,7 +72,7 @@ def generate_variant_map(df, output_dir):
                  size=np.sqrt(data.cases/total_cases))
 
 
-    legend_elements = [Patch(facecolor=color, label=name.capitalize())
+    legend_elements = [Patch(facecolor=color, label=name)
                        for color, name in zip(colors, variant_names)]
 
     plt.title(
