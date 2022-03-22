@@ -14,8 +14,8 @@ seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
 #seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],Sys.Date(),1))
 ### binomial confidence intervals, will be showed by week
 #time_window <- c("2021-01-01", "2021-01-31")
-seqch[seqch$who_variants %in% "Mu"] <- "others"
-seqch[seqch$who_variants  %in% "B.1.1.318"] <- "others"
+seqch$who_variants[seqch$who_variants %in% "Mu"] <- "others"
+seqch$who_variants[seqch$who_variants  %in% "B.1.1.318"] <- "others"
 lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "Omicron (BA.1)","Omicron (BA.2)", "others")
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "B.1.1.318", "Omicron", "others")
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "others", "undetermined")
@@ -193,7 +193,7 @@ g_legend <- function(a.gplot,num){
 variants_plot_model <- ggplot() + 
   geom_line(data=predict.eff_date, aes(x = date, y = prob, color = who_variants))+#predict.eff_date_reg[predict.eff_date_reg$region=="Region 1",]
   geom_ribbon(data=predict.eff_date, aes(x = date, y = prob, ymin = lower,ymax = upper,fill=who_variants),alpha=0.4)+
-  geom_errorbar(data= variant_week[na.omit(variant_week$region=="CH"),], aes(x = week_day, ymin=lower, ymax=upper), width=.1) +
+  geom_errorbar(data= variant_week[na.omit(variant_week$region=="CH"),], aes(x = week_day, ymin=lower, ymax=upper,color=who_variants), width=.1) +
   geom_point(data= variant_week[na.omit(variant_week$region=="CH"),],aes(x = week_day, y=conf, color = who_variants))+
   geom_rect(aes(xmin = as_date(max(seqch$date)), ymin = 0, xmax = time_window[2], ymax = 1), fill= "#e8e8e8", colour= "transparent", alpha=0.4)+
   scale_x_date(date_breaks = "1 month", 
@@ -251,6 +251,6 @@ com_regional_ch_variants<- grid.arrange(variants_plot_model, variants_plot_model
 period_date <- period(Sys.Date())
 period_days <- seq(period_date[1], period_date[2],1)
 
-ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 23,  bg = "transparent")
-ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 23,  bg = "transparent")
+ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 27,  bg = "transparent")
+ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 27,  bg = "transparent")
 

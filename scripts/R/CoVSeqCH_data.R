@@ -273,20 +273,30 @@ region_names <- function(x){
 #variants_ch$region <- sapply(variants_ch$region, region_names)
 #variants_ch$region <- factor(variants_ch$region, levels = c("region_1","region_2","region_3","region_4","region_5","region_6","CH"))
 
+setwd("./plots/")
+dir_create <- paste0("",format(as_date(mean(period_date)), format = "%Y-%m"),"")
+if (!dir.exists(dir_create)){
+  dir.create(dir_create)
+} 
+setwd(paste0("./",format(as_date(mean(period_date)), format = "%Y-%m")))
+dir_create <- paste0("pdf")
+if (!dir.exists(dir_create)){
+  dir.create(dir_create)
+} 
+dir_create <- paste0("png")
+if (!dir.exists(dir_create)){
+  dir.create(dir_create)
+} 
 
+setwd("../")
+setwd("../")
+setwd("./tables/")
+dir_create <- paste0("./",format(as_date(mean(period_date)), format = "%Y-%m"))
+if (!dir.exists(dir_create)){
+  dir.create(dir_create)
+} 
+setwd("../")
 
-dir_create <- paste0("./plots/",format(as_date(mean(period_date)), format = "%Y-%m"),"/png")
-if (!dir.exists(dir_create)){
-  dir.create(dir_create)
-} 
-dir_create <- paste0("./plots/",format(as_date(mean(period_date)), format = "%Y-%m"),"/pdf")
-if (!dir.exists(dir_create)){
-  dir.create(dir_create)
-} 
-dir_create <- paste0("./tables/",format(as_date(mean(period_date)), format = "%Y-%m"))
-if (!dir.exists(dir_create)){
-  dir.create(dir_create)
-} 
 
 
 

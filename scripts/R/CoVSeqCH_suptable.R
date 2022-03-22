@@ -394,14 +394,14 @@ table[is.na(table)] <- "-"
 #period_days <- seq(period_date[1], period_date[2],1)
 
 perioddate <- paste0(unique(format(period_date, format="%b")),collapse = "_")
-write.xlsx(table, paste0("./tables/",year_end,"-01","/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
+write.xlsx(table, paste0("./tables/",format(as_date(mean(period_date)), format = "%Y-%m"),"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)
 
 
 table <- table[grepl("Region|Switzerland", rownames(table)),]
 table<- table[,c(8:27)]
 
-write.xlsx(table, paste0("./tables/",year_end,"-01","/regional_table_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
+write.xlsx(table, paste0("./tables/",format(as_date(mean(period_date)), format = "%Y-%m"),"/regional_table_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)
 
 
