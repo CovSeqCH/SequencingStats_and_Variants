@@ -36,9 +36,10 @@ cantons_ch <- c("CH", "AG","AI","AR","BE","BL","BS","FR","GE",
                 "SO","SZ","TG",  "TI","UR","VD","VS","ZG","ZH")
 
 ## Swiss SARS-CoV-2  metadata:
-url <- readLines("https://www.covid19.admin.ch/api/data/context")
-url <- gsub("^(.*)https:", "https:", url[18])
+url <- readLines("https://www.covid19.admin.ch/api/data/context", warn=FALSE)
+url <- gsub("^(.*)https:", "https:", url[19])
 url <- gsub("\"", "",url)
+url <- gsub(",", "",url)
 download(url, dest=paste0("covid19_bag_", Sys.Date(),".zip"), mode="wb") 
 unzip(paste0("covid19_bag_", Sys.Date(),".zip"), exdir = "./temp_data")
 
