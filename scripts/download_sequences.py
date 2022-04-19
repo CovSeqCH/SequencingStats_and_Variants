@@ -31,7 +31,7 @@ def generate_csv():
                     return val
         if debug:
             print(f'{lineage} assigned "others"')
-        if lineage is None:
+        if lineage is None or lineage == "Unassigned":
             return "None"
         return "others"
 
