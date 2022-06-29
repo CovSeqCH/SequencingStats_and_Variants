@@ -11,11 +11,11 @@ from scripts.surveillance_region_map import name_to_region as region_mapping
 from scripts.variant_to_pango import variant_to_lineage
 
 #%%
-
+ACCESS_KEY = "9Cb3CqmrFnVjO3XCxQLO6gUnKPd"
 
 def generate_csv():
     url = "https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated"
-    params = {"country": "Switzerland", "fields": "date,division,pangoLineage,submittingLab"}
+    params = {"country": "Switzerland", "fields": "date,division,pangoLineage,submittingLab", "accessKey": ACCESS_KEY}
     r = requests.get(url, params)
     j = json.loads(r.text)
     df = pd.read_json(json.dumps(j["data"]))
