@@ -1,4 +1,5 @@
 # %%
+from pdb import set_trace
 import numpy as np
 import geopandas
 from matplotlib.patches import Patch
@@ -20,9 +21,14 @@ def draw_pie(ratios, colors, x=0, y=0, size=1):
     for ratio, color in zip(ratios, colors):
         trans = (fig.dpi_scale_trans +
                  transforms.ScaledTranslation(x, y, ax.transData))
-        w = mpatches.Wedge((0, 0), size, 360. * ratio_acc, 360. * (ratio_acc + ratio),
+        try:
+            w = mpatches.Wedge((0, 0), size, 360. * ratio_acc, 360. * (ratio_acc + ratio),
                            clip_on=True, transform=trans, facecolor=color)
-        ax.add_patch(w)
+            ax.add_patch(w)
+        #Print exception
+        except:
+            pass
+
         ratio_acc += ratio
 
 

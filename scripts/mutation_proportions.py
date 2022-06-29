@@ -2,6 +2,7 @@
 import json
 from functools import reduce
 from itertools import product
+from pdb import set_trace
 from typing import Dict
 
 import pandas as pd
@@ -17,12 +18,13 @@ regions = [{}, {"region": "Europe"}, {"country": "Switzerland"}]
 
 combinations = list(product(mois, regions))
 #%%
+ACCESS_KEY = "9Cb3CqmrFnVjO3XCxQLO6gUnKPd"
 def get_mutation_numbers(mutation: str = "", geo_filter: Dict = {}) -> pd.DataFrame:
     """
     Get mutation numbers for a given mutation and a geo filter
     """
     url = "https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated"
-    params = {"fields": "date", "aaMutations": mutation, "dateFrom": "2019-12-01"}
+    params = {"fields": "date", "aaMutations": mutation, "dateFrom": "2019-12-01","accessKey": ACCESS_KEY}
     params.update(geo_filter)
     r = requests.get(url, params)
     j = json.loads(r.text)
