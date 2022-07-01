@@ -4,7 +4,7 @@
 ### install packages
 list.of.packages <- c("lubridate","downloader","xlsx","httr","nnet","effects","effects","splines","emmeans","reshape2","ggplot2","RColorBrewer","gridExtra","grid","tidyverse")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
+if(length(new.packages)) install.packages(new.packages, Ncpus=8)
 ### load libraries:
 library(lubridate)
 library(downloader)
@@ -89,7 +89,7 @@ remove(BAG_test_canton_pcr)
 
 # new to get sequence data incl. canton:
 #url <- GET("https://cov-spectrum.ethz.ch/api/resource/sample2?country=Switzerland&fields=date,division,pangolinLineage")
-url <- GET("https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage")#Used since 17 Nov 2021
+url <- GET("https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage&accessKey=9Cb3CqmrFnVjO3XCxQLO6gUnKPd")#Used since 17 Nov 2021
 jsonRespParsed<- content(url,as="parsed", encoding="UTF-8") 
 seq_ch <- jsonRespParsed%>%bind_rows#%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
 seq_ch <- seq_ch[,c("date","division","pangoLineage","count")]

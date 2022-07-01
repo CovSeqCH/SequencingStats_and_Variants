@@ -5,9 +5,9 @@
 ## help from here: https://github.com/tomwenseleers/newcovid_belgium/blob/main/functions/simulate_overdispersion.R
 
 ### set working directory
-setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#may need to be adapted
+#setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#may need to be adapted
 ### load data:
-#source("./scripts/R/CoVSeqCH_data.R")
+source("./scripts/R/CoVSeqCH_data.R")
 
 
 seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))

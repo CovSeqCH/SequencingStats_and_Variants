@@ -3,7 +3,7 @@
 #### National sequencing surveillance program on SARS-CoV-2 variants
 
 ### set working directory
-setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#may need to be adapted
+#setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#may need to be adapted
 ### load data:
 source("./scripts/R/CoVSeqCH_data.R")
 #period_date <- c(as_date("2021-11-01"), as_date("2021-12-05"))
