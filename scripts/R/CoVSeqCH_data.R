@@ -89,7 +89,7 @@ remove(BAG_test_canton_pcr)
 
 # new to get sequence data incl. canton:
 #url <- GET("https://cov-spectrum.ethz.ch/api/resource/sample2?country=Switzerland&fields=date,division,pangolinLineage")
-url <- GET("https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage")#Used since 17 Nov 2021
+url <- GET("https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage&accessKey=9Cb3CqmrFnVjO3XCxQLO6gUnKPd") #Used since 17 Nov 2021
 jsonRespParsed<- content(url,as="parsed", encoding="UTF-8") 
 seq_ch <- jsonRespParsed%>%bind_rows#%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
 seq_ch <- seq_ch[,c("date","division","pangoLineage","count")]
@@ -128,7 +128,9 @@ period <- function(x) {
   c(as_date(format(x, paste0("%Y-",month_start,"-01"))),
     lubridate::floor_date(as_date(format(x, paste0("%Y-",month_end,"-01"))), unit = "month") - 1)
 }
-period_date <- period(Sys.Date())
+#period_date <- period(Sys.Date())
+# Create Date with 2022-06-25
+period_date <- period(as_date("2022-06-25"))
 if(month_start==12){
   period_date <- c(as_date("2021-12-01"), as_date("2021-12-31"))
 }
@@ -172,6 +174,8 @@ who_variant_names <- function(x){
   else if(grepl("Mu|mu|B.1.621|B.1.621.1|B.1.621.2|B.1.621.3",x,useBytes = TRUE)){return("Mu")}#useBytes = FALSE
   else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}#,useBytes = FALSE
   #else if(grepl("B.1.1.529|BA.1|BA.2",x)){return("Omicron")}#,useBytes = FALSE
+  else if(grepl("BA.4",x)){return("Omicron (BA.4)")}#,useBytes = FALSE
+  else if(grepl("BA.5",x)){return("Omicron (BA.5)")}#,useBytes = FALSE
   else if(grepl("BA.2",x)){return("Omicron (BA.2)")}#,useBytes = FALSE
   else if(grepl("BA.1",x)){return("Omicron (BA.1)")}#,useBytes = FALSE
   else{return("others")}
