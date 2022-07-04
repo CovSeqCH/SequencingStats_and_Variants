@@ -248,7 +248,7 @@ com_regional_ch_variants<- grid.arrange(variants_plot_model, variants_plot_model
                                         variants_legend,regional_variants_plot_model, 
                                         regional_variants_plot_model_log, nrow = 2)
 
-period_date <- period(Sys.Date())
+period_date <- period(ymd("2022-06-25"))
 period_days <- seq(period_date[1], period_date[2],1)
 
 ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 27,  bg = "transparent")

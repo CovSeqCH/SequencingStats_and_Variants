@@ -104,8 +104,10 @@ remove(url)
 remove(jsonRespParsed)
 
 ### prepare data / data cleaning:
-month_end <- as.numeric(format(Sys.Date(),"%m"))
-year_end <- as.numeric(format(Sys.Date(),"%Y"))
+# month_end <- as.numeric(format(Sys.Date(),"%m"))
+# year_end <- as.numeric(format(Sys.Date(),"%Y"))
+month_end <- "06"
+year_end <- "2022"
 if(month_end+1>9 &month_end+1<13){
   time_window <- c(as_date("2021-01-01"), as_date(paste0(year_end, month_end+1,"-01"))-1)
   
@@ -119,7 +121,7 @@ if(month_end+1<10){
   
 }
 #time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
-month_start <- format(as.numeric(format(Sys.Date(),"%m"))-1, format="%m")
+month_start <- format(5, format="%m")
 if(month_end==1){
   month_start <- 12
 }
