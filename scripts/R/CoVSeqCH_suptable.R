@@ -21,7 +21,7 @@ seqch <- seqch[!seqch$who_variants %in% "undetermined",]
 
 
 ### Supplementary table creation:
-table <- as.data.frame(matrix(ncol=30, nrow= 33))
+table <- as.data.frame(matrix(ncol=40, nrow= 33))
 rownames(table) <- c("CH",
                      "region_1",
                      unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_1"])),
@@ -317,20 +317,19 @@ for (c in unname(unlist(rownames(table)))){
   else{
     table[,27][rownames(table) == c] <- "-"
   }
-  # Number of "other"
+  # Number of Omicron BA.3
   if(grepl("CH", c)){
-    table[,28][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "others"]))
+    table[,28][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "Omicron (BA.3)"]))
   }
   else if(grepl("region", c)){
-    table[,28][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "others"]))
+    table[,28][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "Omicron (BA.3)"]))
   }
   else{
-    table[,28][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "others"]))
+    table[,28][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.3)"]))
   }
-  
-  # Proportion of  others to all sequences
-  if(table[,28][rownames(table) == c]!=0 & !is.na(table[,28][rownames(table) == c])){
-    interval <- binom.test(as.numeric(table[,28][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+  # Proportion of  Omicron to all sequences
+  if(table[,28][rownames(table) == c]!=0 & !is.na(table[,29][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,29][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,29][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
     if(interval$estimate<"0.001" & interval$estimate!="0"){
       table[,29][rownames(table) == c] <- "<0.1"
@@ -339,15 +338,126 @@ for (c in unname(unlist(rownames(table)))){
   else{
     table[,29][rownames(table) == c] <- "-"
   }
-  # Number of "undetermined"
+  # Number of Omicron BA.4
   if(grepl("CH", c)){
-    table[,30][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$country %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+    table[,30][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "Omicron (BA.4)"]))
   }
   else if(grepl("region", c)){
-    table[,30][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$region %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+    table[,30][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "Omicron (BA.4)"]))
   }
   else{
-    table[,30][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$canton %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+    table[,30][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.4)"]))
+  }
+  # Proportion of  Omicron to all sequences
+  if(table[,30][rownames(table) == c]!=0 & !is.na(table[,31][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,31][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+    table[,31][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
+    if(interval$estimate<"0.001" & interval$estimate!="0"){
+      table[,31][rownames(table) == c] <- "<0.1"
+    }
+  }
+  else{
+    table[,31][rownames(table) == c] <- "-"
+  }
+  # Number of Omicron BA.5
+  if(grepl("CH", c)){
+    table[,32][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "Omicron (BA.5)"]))
+  }
+  else if(grepl("region", c)){
+    table[,32][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "Omicron (BA.5)"]))
+  }
+  else{
+    table[,32][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.5)"]))
+  }
+  # Proportion of  Omicron to all sequences
+  if(table[,32][rownames(table) == c]!=0 & !is.na(table[,33][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,33][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+    table[,33][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
+    if(interval$estimate<"0.001" & interval$estimate!="0"){
+      table[,33][rownames(table) == c] <- "<0.1"
+    }
+  }
+  else{
+    table[,33][rownames(table) == c] <- "-"
+  }
+  
+  # Number of Omicron BA.2.12.1
+  if(grepl("CH", c)){
+    table[,34][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "Omicron (BA.2.12.1)"]))
+  }
+  else if(grepl("region", c)){
+    table[,34][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "Omicron (BA.2.12.1)"]))
+  }
+  else{
+    table[,34][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.2.12.1)"]))
+  }
+  # Proportion of  Omicron to all sequences
+  if(table[,34][rownames(table) == c]!=0 & !is.na(table[,35][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,35][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+    table[,35][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
+    if(interval$estimate<"0.001" & interval$estimate!="0"){
+      table[,35][rownames(table) == c] <- "<0.1"
+    }
+  }
+  else{
+    table[,35][rownames(table) == c] <- "-"
+  }
+  
+  
+  
+  # Number of Omicron BA.1 & BA.2
+  if(grepl("CH", c)){
+    table[,36][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "Omicron (BA.1 & BA.2)"]))
+  }
+  else if(grepl("region", c)){
+    table[,36][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "Omicron (BA.1 & BA.2)"]))
+  }
+  else{
+    table[,36][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.1 & BA.2)"]))
+  }
+  # Proportion of  Omicron to all sequences
+  if(table[,36][rownames(table) == c]!=0 & !is.na(table[,37][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,37][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+    table[,37][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
+    if(interval$estimate<"0.001" & interval$estimate!="0"){
+      table[,37][rownames(table) == c] <- "<0.1"
+    }
+  }
+  else{
+    table[,37][rownames(table) == c] <- "-"
+  }
+  
+  # Number of "other"
+  if(grepl("CH", c)){
+    table[,38][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "others"]))
+  }
+  else if(grepl("region", c)){
+    table[,38][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "others"]))
+  }
+  else{
+    table[,38][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "others"]))
+  }
+  
+  # Proportion of  others to all sequences
+  if(table[,38][rownames(table) == c]!=0 & !is.na(table[,39][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,39][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+    table[,39][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
+    if(interval$estimate<"0.001" & interval$estimate!="0"){
+      table[,39][rownames(table) == c] <- "<0.1"
+    }
+  }
+  else{
+    table[,39][rownames(table) == c] <- "-"
+  }
+  # Number of "undetermined"
+  if(grepl("CH", c)){
+    table[,40][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$country %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+  }
+  else if(grepl("region", c)){
+    table[,40][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$region %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+  }
+  else{
+    table[,40][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$canton %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
   }
   
 }
@@ -366,6 +476,11 @@ colnames(table) <- c("Population size",
                      "Mu","Percentage Mu (95% CI)",
                      "Omicron (BA.1)","Percentage Omicron (BA.1) (95% CI)",
                      "Omicron (BA.2)","Percentage Omicron (BA.2) (95% CI)",
+                     "Omicron (BA.3)","Percentage Omicron (BA.3) (95% CI)",
+                     "Omicron (BA.4)","Percentage Omicron (BA.4) (95% CI)",
+                     "Omicron (BA.5)","Percentage Omicron (BA.5) (95% CI)",
+                     "Omicron (BA.2.12.1)","Percentage Omicron (BA.2.12.1) (95% CI)",
+                     "Omicron (BA.1 & BA.2)","Percentage Omicron (BA.1 & BA.2) (95% CI)",
                      "Other variants","Percentage other variants (95% CI)",
                      "Undetermined sequences, excluded from further analysis")
 #sum(table$`Confirmed cases`[grepl("region",rownames(table))])==sum(table$`Confirmed cases`[grepl("CH",rownames(table))])
@@ -392,6 +507,7 @@ table[is.na(table)] <- "-"
 #period_date1 <- period_date
 #period_date <- period(Sys.Date())
 #period_days <- seq(period_date[1], period_date[2],1)
+table <- table[-c(4),]
 
 perioddate <- paste0(unique(format(period_date, format="%b")),collapse = "_")
 write.xlsx(table, paste0("./tables/",format(as_date(mean(period_date)), format = "%Y-%m"),"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 

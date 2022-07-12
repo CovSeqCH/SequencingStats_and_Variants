@@ -16,7 +16,15 @@ seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
 #time_window <- c("2021-01-01", "2021-01-31")
 seqch$who_variants[seqch$who_variants %in% "Mu"] <- "others"
 seqch$who_variants[seqch$who_variants  %in% "B.1.1.318"] <- "others"
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "Omicron (BA.1)","Omicron (BA.2)", "others")
+
+#seqch <- seqch[seqch$who_variants %in% names(table(seqch$who_variants)[table(seqch$who_variants)>0]),]
+#lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "Omicron (BA.1)","Omicron (BA.2)", "others")
+lev <- names(table(seqch$who_variants)[table(seqch$who_variants)>0])
+test <- data.frame(table(seqch$who_variants)>0)
+test$names <- rownames(test)
+test <- test[!rownames(test) %in% c("Mu","B.1.1.318"),]
+test$number <- 1:length(test[,1])
+lev_num <- test$number[test[,1] == "TRUE"]
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "B.1.1.318", "Omicron", "others")
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "others", "undetermined")
 seqch <- seqch[seqch$who_variants %in% lev,]
@@ -117,6 +125,11 @@ colnames(predict.eff_date) <- c("date_num","who_variants", "prob","lower", "uppe
 predict.eff_date$who_variants <- gsub("prob.", "", predict.eff_date$who_variants)
 predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.2."] <- "Omicron (BA.2)"
 predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.1."] <- "Omicron (BA.1)"
+predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.3."] <- "Omicron (BA.3)"
+predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.4."] <- "Omicron (BA.4)"
+predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.5."] <- "Omicron (BA.5)"
+predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.2.12.1."] <- "Omicron (BA.2.12.1)"
+predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.1...BA.2."] <- "Omicron (BA.1 & BA.2)"
 
 #predict.eff_date$who_variants <- sapply(predict.eff_date$who_variants, who_variant_names)
 #table(predict.eff_date$who_variants)
@@ -153,6 +166,13 @@ predict.eff_date_reg$date <- as_date(predict.eff_date_reg$date_num)
 #predict.eff_date_reg$who_variants <- ifelse(predict.eff_date_reg$who_variants =="Omicron..BA.1.", as.character("Omicron (BA.1)"), as.character(predict.eff_date$who_variants))
 predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.2."] <- "Omicron (BA.2)"
 predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.1."] <- "Omicron (BA.1)"
+predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.3."] <- "Omicron (BA.3)"
+predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.4."] <- "Omicron (BA.4)"
+predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.5."] <- "Omicron (BA.5)"
+predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.2.12.1."] <- "Omicron (BA.2.12.1)"
+predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.1...BA.2."] <- "Omicron (BA.1 & BA.2)"
+
+
 #predict.eff_date_reg$who_variants <- factor(predict.eff_date_reg$who_variants, levels = lev)
 #predict.eff_date_reg$who_variants  <- as.character(predict.eff_date_reg$who_variants )
 predict.eff_date_reg$date <- as_date(predict.eff_date_reg$date_num)
@@ -165,8 +185,9 @@ col_9 <- (brewer.pal(9,"Set1"))
 
 
 #Alpha Beta Gamma Delta Lambda B.1.1.318  Omicron others
-col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#a83879","#754c73","#a88da7", "#5e5e5d")#, "#999945"
-
+col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#a83879",
+           "#754c73","#a88da7","#fc95fc", "#792bb5", "#615ebd","#0d07b3", "#a84da5","#5e5e5d")#, "#999945"
+col_9 <- col_9[lev_num]
 
 yscaling <- function(l) {
   l <- format(l, scientific = TRUE)
