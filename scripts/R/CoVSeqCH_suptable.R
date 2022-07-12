@@ -328,8 +328,8 @@ for (c in unname(unlist(rownames(table)))){
     table[,28][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.3)"]))
   }
   # Proportion of  Omicron to all sequences
-  if(table[,28][rownames(table) == c]!=0 & !is.na(table[,29][rownames(table) == c])){
-    interval <- binom.test(as.numeric(table[,29][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+  if(table[,28][rownames(table) == c]!=0 & !is.na(table[,28][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,28][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,29][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
     if(interval$estimate<"0.001" & interval$estimate!="0"){
       table[,29][rownames(table) == c] <- "<0.1"
@@ -349,8 +349,8 @@ for (c in unname(unlist(rownames(table)))){
     table[,30][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.4)"]))
   }
   # Proportion of  Omicron to all sequences
-  if(table[,30][rownames(table) == c]!=0 & !is.na(table[,31][rownames(table) == c])){
-    interval <- binom.test(as.numeric(table[,31][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+  if(table[,30][rownames(table) == c]!=0 & !is.na(table[,30][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,30][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,31][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
     if(interval$estimate<"0.001" & interval$estimate!="0"){
       table[,31][rownames(table) == c] <- "<0.1"
@@ -370,8 +370,8 @@ for (c in unname(unlist(rownames(table)))){
     table[,32][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.5)"]))
   }
   # Proportion of  Omicron to all sequences
-  if(table[,32][rownames(table) == c]!=0 & !is.na(table[,33][rownames(table) == c])){
-    interval <- binom.test(as.numeric(table[,33][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+  if(table[,32][rownames(table) == c]!=0 & !is.na(table[,32][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,32][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,33][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
     if(interval$estimate<"0.001" & interval$estimate!="0"){
       table[,33][rownames(table) == c] <- "<0.1"
@@ -392,8 +392,8 @@ for (c in unname(unlist(rownames(table)))){
     table[,34][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.2.12.1)"]))
   }
   # Proportion of  Omicron to all sequences
-  if(table[,34][rownames(table) == c]!=0 & !is.na(table[,35][rownames(table) == c])){
-    interval <- binom.test(as.numeric(table[,35][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+  if(table[,34][rownames(table) == c]!=0 & !is.na(table[,34][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,34][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,35][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
     if(interval$estimate<"0.001" & interval$estimate!="0"){
       table[,35][rownames(table) == c] <- "<0.1"
@@ -416,8 +416,8 @@ for (c in unname(unlist(rownames(table)))){
     table[,36][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (BA.1 & BA.2)"]))
   }
   # Proportion of  Omicron to all sequences
-  if(table[,36][rownames(table) == c]!=0 & !is.na(table[,37][rownames(table) == c])){
-    interval <- binom.test(as.numeric(table[,37][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+  if(table[,36][rownames(table) == c]!=0 & !is.na(table[,36][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,36][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,37][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
     if(interval$estimate<"0.001" & interval$estimate!="0"){
       table[,37][rownames(table) == c] <- "<0.1"
@@ -439,8 +439,8 @@ for (c in unname(unlist(rownames(table)))){
   }
   
   # Proportion of  others to all sequences
-  if(table[,38][rownames(table) == c]!=0 & !is.na(table[,39][rownames(table) == c])){
-    interval <- binom.test(as.numeric(table[,39][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+  if(table[,38][rownames(table) == c]!=0 & !is.na(table[,38][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,38][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,39][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
     if(interval$estimate<"0.001" & interval$estimate!="0"){
       table[,39][rownames(table) == c] <- "<0.1"
@@ -515,7 +515,7 @@ write.xlsx(table, paste0("./tables/",format(as_date(mean(period_date)), format =
 
 
 table <- table[grepl("Region|Switzerland", rownames(table)),]
-table<- table[,c(8:27)]
+table<- table[,-c(1:7)]
 
 write.xlsx(table, paste0("./tables/",format(as_date(mean(period_date)), format = "%Y-%m"),"/regional_table_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)

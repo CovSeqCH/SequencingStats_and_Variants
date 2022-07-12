@@ -16,7 +16,7 @@ seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
 #time_window <- c("2021-01-01", "2021-01-31")
 seqch$who_variants[seqch$who_variants %in% "Mu"] <- "others"
 seqch$who_variants[seqch$who_variants  %in% "B.1.1.318"] <- "others"
-
+seqch <- seqch[!seqch$who_variants  %in% "undetermined",]
 #seqch <- seqch[seqch$who_variants %in% names(table(seqch$who_variants)[table(seqch$who_variants)>0]),]
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda", "Omicron (BA.1)","Omicron (BA.2)", "others")
 lev <- names(table(seqch$who_variants)[table(seqch$who_variants)>0])

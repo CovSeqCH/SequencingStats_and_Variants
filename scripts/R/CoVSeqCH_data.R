@@ -180,6 +180,7 @@ who_variant_names <- function(x){
   else if(grepl("BA.5",x)){return("Omicron (BA.5)")}#,useBytes = FALSE
   else if(grepl("XE",x)){return("Omicron (BA.1 & BA.2)")}#,useBytes = FALSE
   else if(grepl("BA.2.12.1",x)){return("Omicron (BA.2.12.1)")}#,useBytes = FALSE
+  else if(grepl("Unassigned",x)){return("undetermined")}#,useBytes = FALSE
   else{return("others")}
   #else if(x =="others"){return("others")}
   #else{return(x)} 
