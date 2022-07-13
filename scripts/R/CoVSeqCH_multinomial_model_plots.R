@@ -172,6 +172,7 @@ predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicro
 predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.2.12.1."] <- "Omicron (BA.2.12.1)"
 predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.1...BA.2."] <- "Omicron (BA.1 & BA.2)"
 
+predict.eff_date_reg$who_variants <- factor(predict.eff_date_reg$who_variants, levels = lev)
 
 #predict.eff_date_reg$who_variants <- factor(predict.eff_date_reg$who_variants, levels = lev)
 #predict.eff_date_reg$who_variants  <- as.character(predict.eff_date_reg$who_variants )
