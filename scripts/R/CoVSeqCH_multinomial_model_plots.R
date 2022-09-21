@@ -230,6 +230,8 @@ variants_plot_model <- ggplot() +
   scale_y_continuous(limits = c(0,1))+
   coord_cartesian(expand = FALSE)+
   labs(tag=bquote(.("")),subtitle = "Switzerland", x = "", y =bquote("Proportion of SARS-CoV-2 variants"))
+#ggsave(variants_plot_model, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_",format(period_date[2],"%Y-%m"), ".png"), height = 3, width = 6,  bg = "transparent")
+
 variants_plot_model_log <- variants_plot_model+
   coord_cartesian(ylim = c(10^-3, 10^0))+
   theme(legend.position = "none")+
@@ -269,10 +271,13 @@ regional_variants_plot_model_log <- regional_variants_plot_model+
 com_regional_ch_variants<- grid.arrange(variants_plot_model, variants_plot_model_log, 
                                         variants_legend,regional_variants_plot_model, 
                                         regional_variants_plot_model_log, nrow = 2)
-
+log_regional_ch_variants<- grid.arrange(variants_plot_model_log,
+                                        regional_variants_plot_model_log,
+                                        variants_legend, nrow = 1)
 period_date <- period(Sys.Date())
 period_days <- seq(period_date[1], period_date[2],1)
 
 ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 27,  bg = "transparent")
 ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 27,  bg = "transparent")
+ggsave(log_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_log_",format(period_date[2],"%Y-%m"), ".png"), height = 6, width = 20,  bg = "transparent")
 
