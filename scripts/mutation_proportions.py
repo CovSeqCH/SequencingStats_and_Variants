@@ -23,7 +23,7 @@ def get_mutation_numbers(mutation: str = "", geo_filter: Dict = {}) -> pd.DataFr
     """
     Get mutation numbers for a given mutation and a geo filter
     """
-    url = "https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated"
+    url = "https://cov-spectrum.org/gisaid/api/v1/sample/aggregated"
     params = {"fields": "date", "aaMutations": mutation, "dateFrom": "2019-12-01","accessKey": ACCESS_KEY}
     params.update(geo_filter)
     r = requests.get(url, params)

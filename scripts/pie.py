@@ -70,7 +70,7 @@ def generate_variant_map(df, output_dir):
                 colors[i] = to_rgb(variant_to_color[variant])
         
         for variant in variant_names:
-            ratios.append(data[variant]/(data.sequences-data['None']))
+            ratios.append(data[variant]/data.sequences)
         x_val = xy_coords[f'Region {reg}']["x"]
         y_val = xy_coords[f'Region {reg}']["y"]
 

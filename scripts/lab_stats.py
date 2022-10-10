@@ -7,7 +7,7 @@ from scripts.download_cases import cases_by_cw
 from scripts.participating_labs import excluded_labs
 # %%
 
-url = 'https://cov-spectrum.ethz.ch/api/resource/sample2'
+url = 'https://cov-spectrum.org/api/resource/sample2'
 params = {'country': 'Switzerland',
             'fields': 'date,dateSubmitted,submittingLab'}
 r = requests.get(url, params)

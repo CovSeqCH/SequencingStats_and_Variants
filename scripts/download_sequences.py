@@ -14,8 +14,8 @@ from scripts.variant_to_pango import variant_to_lineage
 ACCESS_KEY = "9Cb3CqmrFnVjO3XCxQLO6gUnKPd"
 
 def generate_csv():
-    url = "https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated"
-    params = {"country": "Switzerland", "fields": "date,division,pangoLineage,submittingLab", "accessKey": ACCESS_KEY}
+    url = "https://cov-spectrum.org/gisaid/api/v1/sample/aggregated"
+    params = {"country": "Switzerland", "fields": "date,division,nextcladePangoLineage,submittingLab", "accessKey": ACCESS_KEY}
     r = requests.get(url, params)
     j = json.loads(r.text)
     df = pd.read_json(json.dumps(j["data"]))
@@ -31,16 +31,16 @@ def generate_csv():
                     return val
         if debug:
             print(f'{lineage} assigned "others"')
-        if lineage is None or lineage == "Unassigned":
-            return "None"
+        # if lineage is None or lineage == "Unassigned":
+        #     return "None"
         return "others"
 
     debug = True
     recent = df[df.index > "20210830"]
-    recent.assign(variant=lambda x: x.pangoLineage.map(lineage_to_variant))
+    recent.assign(variant=lambda x: x.nextcladePangoLineage.map(lineage_to_variant))
     debug = False
 
-    df = df.assign(variant=lambda x: x.pangoLineage.map(lineage_to_variant))
+    df = df.assign(variant=lambda x: x.nextcladePangoLineage.map(lineage_to_variant))
 
     #%%
     def lab_to_program(lab):
@@ -86,7 +86,7 @@ def generate_csv():
     variants_by_week = pd.pivot_table(
         df,
         values="count",
-        columns="pangoLineage",
+        columns="nextcladePangoLineage",
         aggfunc="sum",
         fill_value=0,
         index=[pd.Grouper(level="date", freq="W-MON", label="left", closed="left")],

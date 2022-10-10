@@ -102,7 +102,7 @@ def generate_plots(df, output_dir):
     variants = list(variant_to_lineage.keys())
     variants.append('others')
     for key in variants:
-        ax.plot(data.index, data[key]/(data.sequences-data['None']),
+        ax.plot(data.index, data[key]/data.sequences,
                 label=key, color=to_rgb(variant_to_color[key]))
     ax.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
     ax.set_title("Fraction of variants by sample week in Switzerland")
@@ -122,7 +122,7 @@ def generate_plots(df, output_dir):
     variants = list(variant_to_lineage.keys())
     variants.append('others')
     for key in variants:
-        ax.plot(data.index, data[key]/(data.sequences-data['None'])*data.cases,
+        ax.plot(data.index, data[key]/data.sequences*data.cases,
                 label=key, color=to_rgb(variant_to_color[key]))
     ax.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
     ax.set_title(
