@@ -89,8 +89,9 @@ remove(BAG_test_canton_pcr)
 
 # new to get sequence data incl. canton:
 #url <- GET("https://cov-spectrum.ethz.ch/api/resource/sample2?country=Switzerland&fields=date,division,pangolinLineage")
-url <- GET("https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage&accessKey=9Cb3CqmrFnVjO3XCxQLO6gUnKPd")#Used since 17 Nov 2021
+#url <- GET("https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage&accessKey=9Cb3CqmrFnVjO3XCxQLO6gUnKPd")#Used since 17 Nov 2021
 
+url <- GET("https://lapis.cov-spectrum.org/open/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage")#Used since Oct 2022
 jsonRespParsed<- content(url,as="parsed", encoding="UTF-8") 
 seq_ch <- jsonRespParsed%>%bind_rows#%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
 seq_ch <- seq_ch[,c("date","division","pangoLineage","count")]
@@ -173,6 +174,7 @@ who_variant_names <- function(x){
   else if(grepl("Mu|mu|B.1.621|B.1.621.1|B.1.621.2|B.1.621.3",x,useBytes = TRUE)){return("Mu")}#useBytes = FALSE
   else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}#,useBytes = FALSE
   #else if(grepl("B.1.1.529|BA.1|BA.2",x)){return("Omicron")}#,useBytes = FALSE
+  else if(grepl("BA.2.75",x)){return("Omicron (BA.2.75)")}#,useBytes = FALSE
   else if(grepl("BA.2",x)){return("Omicron (BA.2)")}#,useBytes = FALSE
   else if(grepl("BA.1",x)){return("Omicron (BA.1)")}#,useBytes = FALSE
   else if(grepl("BA.3",x)){return("Omicron (BA.3)")}#,useBytes = FALSE
@@ -190,7 +192,7 @@ who_variant_names <- function(x){
 seq_ch$who_variants <- sapply(seq_ch$pangoLineage, who_variant_names)#seq_ch$pangolinLineage
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron", "others", "undetermined")
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "Omicron (BA.3)","Omicron (BA.4)","Omicron (BA.5)","Omicron (BA.2.12.1)","Omicron (BA.1 & BA.2)","others", "undetermined")
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "Omicron (BA.3)","Omicron (BA.4)","Omicron (BA.5)","Omicron (BA.2.12.1)","Omicron (BA.1 & BA.2)", "Omicron (BA.2.75)","others", "undetermined")
 seq_ch$who_variants <- factor(seq_ch$who_variants, levels = lev)
 #variants_ch$variable <- NULL
 

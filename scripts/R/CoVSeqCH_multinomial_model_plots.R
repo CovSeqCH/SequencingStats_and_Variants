@@ -130,6 +130,8 @@ predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.4.
 predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.5."] <- "Omicron (BA.5)"
 predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.2.12.1."] <- "Omicron (BA.2.12.1)"
 predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.1...BA.2."] <- "Omicron (BA.1 & BA.2)"
+predict.eff_date$who_variants[predict.eff_date$who_variants %in% "Omicron..BA.2.75."] <- "Omicron (BA.2.75)"
+
 
 #predict.eff_date$who_variants <- sapply(predict.eff_date$who_variants, who_variant_names)
 #table(predict.eff_date$who_variants)
@@ -171,6 +173,7 @@ predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicro
 predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.5."] <- "Omicron (BA.5)"
 predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.2.12.1."] <- "Omicron (BA.2.12.1)"
 predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.1...BA.2."] <- "Omicron (BA.1 & BA.2)"
+predict.eff_date_reg$who_variants[predict.eff_date_reg$who_variants %in% "Omicron..BA.2.75."] <- "Omicron (BA.2.75)"
 
 predict.eff_date_reg$who_variants <- factor(predict.eff_date_reg$who_variants, levels = lev)
 
@@ -187,7 +190,7 @@ col_9 <- (brewer.pal(9,"Set1"))
 
 #Alpha Beta Gamma Delta Lambda B.1.1.318  Omicron others
 col_9 <- c("#690c0c", "#c94a36", "#f28fa1","#305c23","#a83879",
-           "#754c73","#a88da7","#fc95fc", "#792bb5", "#615ebd","#0d07b3", "#a84da5","#5e5e5d")#, "#999945"
+           "#754c73","#a88da7","#fc95fc", "#792bb5", "#615ebd","#0d07b3", "#a84da5","#40e0d0","#5e5e5d")#, "#999945"
 col_9 <- col_9[lev_num]
 
 yscaling <- function(l) {
