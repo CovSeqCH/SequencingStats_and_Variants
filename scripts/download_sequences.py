@@ -14,7 +14,7 @@ from scripts.variant_to_pango import variant_to_lineage
 ACCESS_KEY = "9Cb3CqmrFnVjO3XCxQLO6gUnKPd"
 
 def generate_csv():
-    url = "https://cov-spectrum.org/gisaid/api/v1/sample/aggregated"
+    url = "https://lapis.cov-spectrum.org/gisaid/v1/sample/aggregated"
     params = {"country": "Switzerland", "fields": "date,division,nextcladePangoLineage,submittingLab", "accessKey": ACCESS_KEY}
     r = requests.get(url, params)
     j = json.loads(r.text)
