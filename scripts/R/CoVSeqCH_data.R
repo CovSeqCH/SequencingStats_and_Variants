@@ -37,7 +37,7 @@ cantons_ch <- c("CH", "AG","AI","AR","BE","BL","BS","FR","GE",
 
 ## Swiss SARS-CoV-2  metadata:
 url <- readLines("https://www.covid19.admin.ch/api/data/context", warn=FALSE)
-url <- gsub("^(.*)https:", "https:", url[19])
+url <- gsub("^(.*)https:", "https:", url[20])
 url <- gsub("\"", "",url)
 url <- gsub(",", "",url)
 download(url, dest=paste0("covid19_bag_", Sys.Date(),".zip"), mode="wb") 
@@ -182,6 +182,8 @@ who_variant_names <- function(x){
   else if(grepl("BA.5",x)){return("Omicron (BA.5)")}#,useBytes = FALSE
   else if(grepl("XE",x)){return("Omicron (BA.1 & BA.2)")}#,useBytes = FALSE
   else if(grepl("BA.2.12.1",x)){return("Omicron (BA.2.12.1)")}#,useBytes = FALSE
+  else if(grepl("BQ.1|BQ.1.1|BQ.1.2|BQ.1.2|BQ.1.3|BQ.1.4",x)){return("Omicron (BQ.1)")}#,useBytes = FALSE
+  else if(grepl("XBB|XBB.1",x)){return("Omicron (XBB)")}#,useBytes = FALSE
   else if(grepl("Unassigned",x)){return("undetermined")}#,useBytes = FALSE
   else{return("others")}
   #else if(x =="others"){return("others")}
@@ -192,7 +194,7 @@ who_variant_names <- function(x){
 seq_ch$who_variants <- sapply(seq_ch$pangoLineage, who_variant_names)#seq_ch$pangolinLineage
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron", "others", "undetermined")
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "Omicron (BA.3)","Omicron (BA.4)","Omicron (BA.5)","Omicron (BA.2.12.1)","Omicron (BA.1 & BA.2)", "Omicron (BA.2.75)","others", "undetermined")
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "Omicron (BA.3)","Omicron (BA.4)","Omicron (BA.5)","Omicron (BA.2.12.1)","Omicron (BA.1 & BA.2)", "Omicron (BA.2.75)","Omicron (BQ.1)","Omicron (XBB)","others", "undetermined")
 seq_ch$who_variants <- factor(seq_ch$who_variants, levels = lev)
 #variants_ch$variable <- NULL
 
