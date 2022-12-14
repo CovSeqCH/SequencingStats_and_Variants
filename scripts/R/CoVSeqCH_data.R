@@ -116,8 +116,12 @@ if(month_end==1 &year_end==2022){
   time_window <- c(as_date("2022-01-01"), as_date(paste0("2022-01-01"))-1)
   
 }
-if(month_end+1<10){
+if(month_end+1<12){
   time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end,"-", month_end+1,"-01"))-1)
+  
+}
+if(month_end==12){
+  time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end+1,"-", "01-01"))-1)
   
 }
 #time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
@@ -167,6 +171,7 @@ who_variant_names <- function(x){
   if(is.na(x)){return("undetermined")}
   else if(grepl("Alpha|alpha|B.1.1.7|Q.1|Q.2|Q.3|Q.4|Q.6",x,useBytes = TRUE)){return("Alpha")}
   else if(grepl("Beta|beta|B.1.351|B.1.351.1|B.1.351.2",x,useBytes = TRUE)){return("Beta")}
+  else if(grepl("CP.",x)){return("others")}
   else if(grepl("Gamma|gamma|P.1|P.1.1|P.1.2|P.1.3|P.1.4|P.1.5|P.1.6",x,useBytes = TRUE)){return("Gamma")}
   else if(grepl("Delta|delta|B.1.617.2|AY.1.1|AY.2|AY.3|AY.3.1|AY.4|AY.5|AY.5.1|AY.5.2|AY.6|AY.7|AY.7.1|AY.7.2|AY.8|AY.9|AY.10|AY.11|AY.12|AY.13|AY.14|AY.15|AY.16|AY.17|AY.18|AY.19|AY.20|AY.21|AY.22|AY.23|AY.24|AY.25|AY.26|AY.27|AY.28|AY.29|AY.30|AY.31|AY.32|AY.33|AY.34|AY.35|AY.36|AY.37",x,useBytes = TRUE)){return("Delta")}
   else if(grepl("C.37|Lambda|lambda",x)){return("Lambda")}
@@ -186,8 +191,6 @@ who_variant_names <- function(x){
   else if(grepl("XBB|XBB.1",x)){return("Omicron (XBB)")}#,useBytes = FALSE
   else if(grepl("Unassigned",x)){return("undetermined")}#,useBytes = FALSE
   else{return("others")}
-  #else if(x =="others"){return("others")}
-  #else{return(x)} 
 }
 #https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
 #variants_ch$who_variants <- sapply(variants_ch$variable, who_variant_names)
