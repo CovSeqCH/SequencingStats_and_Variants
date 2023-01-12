@@ -93,7 +93,7 @@ remove(BAG_test_canton_pcr)
 
 url <- GET("https://lapis.cov-spectrum.org/open/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage")#Used since Oct 2022
 jsonRespParsed<- content(url,as="parsed", encoding="UTF-8") 
-seq_ch <- jsonRespParsed%>%bind_rows#%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
+seq_ch <- suppressWarnings(jsonRespParsed%>%bind_rows) #%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
 seq_ch <- seq_ch[,c("date","division","pangoLineage","count")]
 #seq_ch1 <- jsonRespParsed%>%bind_rows%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
 
@@ -108,23 +108,8 @@ remove(jsonRespParsed)
 ### prepare data / data cleaning:
 month_end <- as.numeric(format(Sys.Date(),"%m"))
 year_end <- as.numeric(format(Sys.Date(),"%Y"))
-if(month_end+1>9 &month_end+1<13){
-  time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end, month_end+1,"-01"))-1)
-  
-}
-if(month_end==1 &year_end==2022){
-  time_window <- c(as_date("2022-01-01"), as_date(paste0("2022-01-01"))-1)
-  
-}
-if(month_end+1<12){
-  time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end,"-", month_end+1,"-01"))-1)
-  
-}
-if(month_end==12){
-  time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end+1,"-", "01-01"))-1)
-  
-}
-#time_window <- c(as_date("2021-01-01"), as_date(paste0("2021-", month_end+1,"-01"))-1)
+time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end, sprintf("%02d", month_end),"-01"))-1)
+
 month_start <- format(as.numeric(format(Sys.Date(),"%m"))-1, format="%m")
 if(month_end==1){
   month_start <- 12
@@ -136,16 +121,12 @@ period <- function(x) {
 }
 period_date <- period(Sys.Date())
 if(month_start==12){
-  period_date <- c(as_date("2021-12-01"), as_date("2021-12-31"))
+  period_date <- c(as_date(format(paste0(year(Sys.Date())-1,"12","01"))), as_date(format(paste0(year(Sys.Date())-1,"12","31"))))
 }
 period_days <- seq(period_date[1], period_date[2],1)
 
-if(period_date[2]=="2021-09-30"){ #for September
-period_date <- c(as_date("2021-08-30"), as_date("2021-10-03"))
-period_days <- seq(period_date[1], period_date[2],1)
-}
 
-# after September starting looking at weeks not 1st to last date of month:
+# looking at weeks not 1st to last date of month:
 if(weekdays( period_date[1])== "Monday"){
   period_date <- c(period_date[1], floor_date(as.Date(period_date[2], "%m/%d/%Y"), unit="week"))
   
@@ -189,6 +170,7 @@ who_variant_names <- function(x){
   else if(grepl("BA.2.12.1",x)){return("Omicron (BA.2.12.1)")}#,useBytes = FALSE
   else if(grepl("BQ.1|BQ.1.1|BQ.1.2|BQ.1.2|BQ.1.3|BQ.1.4",x)){return("Omicron (BQ.1)")}#,useBytes = FALSE
   else if(grepl("XBB|XBB.1",x)){return("Omicron (XBB)")}#,useBytes = FALSE
+  else if(x %in% "XBB.1.5"){return("Omicron (XBB.1.5)")}#,useBytes = FALSE
   else if(grepl("Unassigned",x)){return("undetermined")}#,useBytes = FALSE
   else{return("others")}
 }
@@ -197,7 +179,7 @@ who_variant_names <- function(x){
 seq_ch$who_variants <- sapply(seq_ch$pangoLineage, who_variant_names)#seq_ch$pangolinLineage
 #lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron", "others", "undetermined")
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "Omicron (BA.3)","Omicron (BA.4)","Omicron (BA.5)","Omicron (BA.2.12.1)","Omicron (BA.1 & BA.2)", "Omicron (BA.2.75)","Omicron (BQ.1)","Omicron (XBB)","others", "undetermined")
+lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "Omicron (BA.3)","Omicron (BA.4)","Omicron (BA.5)","Omicron (BA.2.12.1)","Omicron (BA.1 & BA.2)", "Omicron (BA.2.75)","Omicron (BQ.1)","Omicron (XBB)","Omicron (XBB.1.5)","others", "undetermined")
 seq_ch$who_variants <- factor(seq_ch$who_variants, levels = lev)
 #variants_ch$variable <- NULL
 

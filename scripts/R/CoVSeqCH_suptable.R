@@ -21,7 +21,7 @@ seqch <- seqch[!seqch$who_variants %in% "undetermined",]
 
 
 ### Supplementary table creation:
-table <- as.data.frame(matrix(ncol=46, nrow= 33))
+table <- as.data.frame(matrix(ncol=48, nrow= 33))
 rownames(table) <- c("CH",
                      "region_1",
                      unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_1"])),
@@ -490,20 +490,17 @@ for (c in unname(unlist(rownames(table)))){
   else{
     table[,43][rownames(table) == c] <- "-"
   }
-  
-  
-  # Number of "other"
+  # Number of Omicron XBB.1.4
   if(grepl("CH", c)){
-    table[,44][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "others"]))
+    table[,44][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "Omicron (XBB.1.5)"]))
   }
   else if(grepl("region", c)){
-    table[,44][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "others"]))
+    table[,44][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "Omicron (XBB.1.5)"]))
   }
   else{
-    table[,44][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "others"]))
+    table[,44][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "Omicron (XBB.1.5)"]))
   }
-  
-  # Proportion of  others to all sequences
+  # Proportion of  Omicron to all sequences
   if(table[,44][rownames(table) == c]!=0 & !is.na(table[,44][rownames(table) == c])){
     interval <- binom.test(as.numeric(table[,44][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
     table[,45][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
@@ -514,15 +511,38 @@ for (c in unname(unlist(rownames(table)))){
   else{
     table[,45][rownames(table) == c] <- "-"
   }
-  # Number of "undetermined"
+  
+  # Number of "other"
   if(grepl("CH", c)){
-    table[,46][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$country %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+    table[,46][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$country %in% c & seqch$who_variants  %in% "others"]))
   }
   else if(grepl("region", c)){
-    table[,46][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$region %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+    table[,46][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$region %in% c & seqch$who_variants  %in% "others"]))
   }
   else{
-    table[,46][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$canton %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+    table[,46][rownames(table) == c] <- length(na.omit(seqch$who_variants[seqch$canton %in% c & seqch$who_variants  %in% "others"]))
+  }
+  
+  # Proportion of  others to all sequences
+  if(table[,46][rownames(table) == c]!=0 & !is.na(table[,46][rownames(table) == c])){
+    interval <- binom.test(as.numeric(table[,46][rownames(table) == c]), table[,8][rownames(table) == c])  #binomial 95% confidence intervals
+    table[,47][rownames(table) == c] <- paste0(format(round(interval$estimate*100,1), nsmall = 1), " (",format(round(interval$conf.int[1]*100,1), nsmall = 1),"-",format(round(interval$conf.int[2]*100,1), nsmall = 1),")")
+    if(interval$estimate<"0.001" & interval$estimate!="0"){
+      table[,47][rownames(table) == c] <- "<0.1"
+    }
+  }
+  else{
+    table[,47][rownames(table) == c] <- "-"
+  }
+  # Number of "undetermined"
+  if(grepl("CH", c)){
+    table[,48][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$country %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+  }
+  else if(grepl("region", c)){
+    table[,48][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$region %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
+  }
+  else{
+    table[,48][rownames(table) == c] <- length(na.omit(seqch_undetermined$who_variants[seqch_undetermined$canton %in% c & seqch_undetermined$who_variants  %in% "undetermined"]))
   }
   
 }
@@ -547,8 +567,9 @@ colnames(table) <- c("Population size",
                      "Omicron (BA.2.12.1)","Percentage Omicron (BA.2.12.1) (95% CI)",
                      "Omicron (BA.1 & BA.2)","Percentage Omicron (BA.1 & BA.2) (95% CI)",
                      "Omicron (BA.2.75)","Percentage Omicron (BA.2.75) (95% CI)",
-                     "Omicron (BA.2.75)","Percentage Omicron (BQ.1) (95% CI)",
-                     "Omicron (BA.2.75)","Percentage Omicron (XBB) (95% CI)",
+                     "Omicron (BQ.1)","Percentage Omicron (BQ.1) (95% CI)",
+                     "Omicron (XBB)","Percentage Omicron (XBB) (95% CI)",
+                     "Omicron (XBB.1.5)","Percentage Omicron (XBB.1.5) (95% CI)",
                      "Other variants","Percentage other variants (95% CI)",
                      "Undetermined sequences, excluded from further analysis")
 #sum(table$`Confirmed cases`[grepl("region",rownames(table))])==sum(table$`Confirmed cases`[grepl("CH",rownames(table))])
@@ -572,10 +593,10 @@ rownames(table) <- c("Switzerland overall",
 
 table[is.na(table)] <- "-"
 # output table:
-#period_date1 <- period_date
-#period_date <- period(Sys.Date())
-#period_days <- seq(period_date[1], period_date[2],1)
-table <- table[-c(4),]
+
+table <- table[,-c(4)]
+table <- table[, colSums(table != 0) > 0 & colSums(table == "-")!= length(table[,1])]
+
 
 perioddate <- paste0(unique(format(period_date, format="%b")),collapse = "_")
 write.xlsx(table, paste0("./tables/",format(as_date(mean(period_date)), format = "%Y-%m"),"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
