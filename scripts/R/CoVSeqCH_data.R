@@ -11,7 +11,7 @@ library(downloader)
 library(xlsx)
 library(httr)
 library(nnet)
-library(effects)#nnet if effects()
+library(effects)
 library(splines)# if ns()
 library(emmeans)
 library(reshape2)
@@ -24,13 +24,8 @@ library(tidyverse)
 
 
 ### load data:
-
 ## Swiss population size:
 #url <- "https://www.bag.admin.ch/dam/bag/de/dokumente/mt/k-und-i/aktuelle-ausbrueche-pandemien/2019-nCoV/covid-19-basisdaten-bevoelkerungszahlen.xlsx.download.xlsx/Population_Size_BFS.xlsx"
-#GET(url, write_disk(tf <- tempfile(fileext = ".xls")))
-#CH_canton_age_population <- read.xlsx(tf,sheetIndex = 2, startRow = 0)
-#colnames(CH_canton_age_population) <- c("canton", "gender", "age", "no_pop")
-#remove(url)
 cantons_ch <- c("CH", "AG","AI","AR","BE","BL","BS","FR","GE",
                 "GL","GR", "JU","LU","NE","NW","OW","SG","SH",
                 "SO","SZ","TG",  "TI","UR","VD","VS","ZG","ZH")
@@ -85,22 +80,14 @@ remove(BAG_test_canton_antig)
 remove(BAG_test_canton_pcr)
 
 ## Swiss SARS-CoV-2 sequencing metadata:
-#variants_ch <- read.csv("https://raw.githubusercontent.com/CovSeqCH/SequencingStats_and_Variants/cr-dev/data/cases_seq_by_day_region.csv")
-
-# new to get sequence data incl. canton:
-#url <- GET("https://cov-spectrum.ethz.ch/api/resource/sample2?country=Switzerland&fields=date,division,pangolinLineage")
-#url <- GET("https://cov-spectrum.ethz.ch/gisaid/api/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage&accessKey=9Cb3CqmrFnVjO3XCxQLO6gUnKPd")#Used since 17 Nov 2021
-
 url <- GET("https://lapis.cov-spectrum.org/open/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage")#Used since Oct 2022
 jsonRespParsed<- content(url,as="parsed", encoding="UTF-8") 
 seq_ch <- suppressWarnings(jsonRespParsed%>%bind_rows) #%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
 seq_ch <- seq_ch[,c("date","division","pangoLineage","count")]
-#seq_ch1 <- jsonRespParsed%>%bind_rows%>%select(date,division,pangolinLineage)# %>%subset(.,country %in% "Switzerland") #%>%
 
 seq_ch <- seq_ch[seq_ch$count>0&!is.na(seq_ch$count),]
 seq_ch$country <- "CH"
 seq_ch <- seq_ch[rep(row.names(seq_ch), seq_ch$count), c(1,2,3,5)]
-#seq_ch <- seq_ch[!is.na(seq_ch$pangolinLineage),]
 
 remove(url)
 remove(jsonRespParsed)
@@ -108,7 +95,7 @@ remove(jsonRespParsed)
 ### prepare data / data cleaning:
 month_end <- as.numeric(format(Sys.Date(),"%m"))
 year_end <- as.numeric(format(Sys.Date(),"%Y"))
-time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end, sprintf("%02d", month_end),"-01"))-1)
+time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end, sprintf("%02d", month_end),"-30"))-1)
 
 month_start <- format(as.numeric(format(Sys.Date(),"%m"))-1, format="%m")
 if(month_end==1){
@@ -139,27 +126,15 @@ period_days <- seq(period_date[1], period_date[2],1)
 
 
 time_window[2] <- time_window[2]-1
-#variants_ch <- subset(variants_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))#Sys.Date()-14
 BAG_data <- subset(BAG_data, as_date(date) %in% seq(time_window[1],time_window[2],1))
 seq_ch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],time_window[2],1))
 
 
 ### renaming functions / variables generation
 ## Renaming variants according to WHO
-#variants_ch <- melt(variants_ch, id.vars=c("date", "region","cases","sequences"))
-
 who_variant_names <- function(x){
   if(is.na(x)){return("undetermined")}
-  else if(grepl("Alpha|alpha|B.1.1.7|Q.1|Q.2|Q.3|Q.4|Q.6",x,useBytes = TRUE)){return("Alpha")}
-  else if(grepl("Beta|beta|B.1.351|B.1.351.1|B.1.351.2",x,useBytes = TRUE)){return("Beta")}
-  else if(grepl("CP.",x)){return("others")}
-  else if(grepl("Gamma|gamma|P.1|P.1.1|P.1.2|P.1.3|P.1.4|P.1.5|P.1.6",x,useBytes = TRUE)){return("Gamma")}
-  else if(grepl("Delta|delta|B.1.617.2|AY.1.1|AY.2|AY.3|AY.3.1|AY.4|AY.5|AY.5.1|AY.5.2|AY.6|AY.7|AY.7.1|AY.7.2|AY.8|AY.9|AY.10|AY.11|AY.12|AY.13|AY.14|AY.15|AY.16|AY.17|AY.18|AY.19|AY.20|AY.21|AY.22|AY.23|AY.24|AY.25|AY.26|AY.27|AY.28|AY.29|AY.30|AY.31|AY.32|AY.33|AY.34|AY.35|AY.36|AY.37",x,useBytes = TRUE)){return("Delta")}
-  else if(grepl("C.37|Lambda|lambda",x)){return("Lambda")}
-  #else if(grepl("C.36",x)){return("C.36*")}
-  else if(grepl("Mu|mu|B.1.621|B.1.621.1|B.1.621.2|B.1.621.3",x,useBytes = TRUE)){return("Mu")}#useBytes = FALSE
-  else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}#,useBytes = FALSE
-  #else if(grepl("B.1.1.529|BA.1|BA.2",x)){return("Omicron")}#,useBytes = FALSE
+ #else if(grepl("B.1.1.529|BA.1|BA.2",x)){return("Omicron")}#,useBytes = FALSE
   else if(grepl("BA.2.75",x)){return("Omicron (BA.2.75)")}#,useBytes = FALSE
   else if(grepl("BA.2",x)){return("Omicron (BA.2)")}#,useBytes = FALSE
   else if(grepl("BA.1",x)){return("Omicron (BA.1)")}#,useBytes = FALSE
@@ -169,19 +144,23 @@ who_variant_names <- function(x){
   else if(grepl("XE",x)){return("Omicron (BA.1 & BA.2)")}#,useBytes = FALSE
   else if(grepl("BA.2.12.1",x)){return("Omicron (BA.2.12.1)")}#,useBytes = FALSE
   else if(grepl("BQ.1|BQ.1.1|BQ.1.2|BQ.1.2|BQ.1.3|BQ.1.4",x)){return("Omicron (BQ.1)")}#,useBytes = FALSE
-  else if(grepl("XBB|XBB.1",x)){return("Omicron (XBB)")}#,useBytes = FALSE
   else if(x %in% "XBB.1.5"){return("Omicron (XBB.1.5)")}#,useBytes = FALSE
+  else if(grepl("XBB|XBB.1",x)){return("Omicron (XBB)")}#,useBytes = FALSE
+  else if(x %in% c("Alpha","alpha","B.1.1.7","Q.1","Q.2","Q.3","Q.4","Q.6")){return("Alpha")}
+  else if(grepl("Beta|beta|B.1.351|B.1.351.1|B.1.351.2",x,useBytes = TRUE)){return("Beta")}
+  else if(grepl("CP.",x)){return("others")}
+  else if(grepl("Gamma|gamma|P.1|P.1.1|P.1.2|P.1.3|P.1.4|P.1.5|P.1.6",x,useBytes = TRUE)){return("Gamma")}
+  else if(grepl("Delta|delta|B.1.617.2|AY.1.1|AY.2|AY.3|AY.3.1|AY.4|AY.5|AY.5.1|AY.5.2|AY.6|AY.7|AY.7.1|AY.7.2|AY.8|AY.9|AY.10|AY.11|AY.12|AY.13|AY.14|AY.15|AY.16|AY.17|AY.18|AY.19|AY.20|AY.21|AY.22|AY.23|AY.24|AY.25|AY.26|AY.27|AY.28|AY.29|AY.30|AY.31|AY.32|AY.33|AY.34|AY.35|AY.36|AY.37",x,useBytes = TRUE)){return("Delta")}
+  else if(grepl("C.37|Lambda|lambda",x)){return("Lambda")}
+  else if(x %in% "C.36"){return("C.36*")}
+  else if(grepl("Mu|mu|B.1.621|B.1.621.1|B.1.621.2|B.1.621.3",x,useBytes = TRUE)){return("Mu")}#useBytes = FALSE
+  else if(grepl("B.1.1.318|AZ.2|AZ.",x)){return("B.1.1.318")}#,useBytes = FALSE
   else if(grepl("Unassigned",x)){return("undetermined")}#,useBytes = FALSE
   else{return("others")}
 }
+seq_ch$who_variants  <- sapply(seq_ch$pangoLineage, who_variant_names)
 #https://www.who.int/en/activities/tracking-SARS-CoV-2-variants/
-#variants_ch$who_variants <- sapply(variants_ch$variable, who_variant_names)
-seq_ch$who_variants <- sapply(seq_ch$pangoLineage, who_variant_names)#seq_ch$pangolinLineage
-#lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron", "others", "undetermined")
 
-lev <- c("Alpha",  "Beta",  "Gamma", "Delta","Lambda","Mu", "B.1.1.318", "Omicron (BA.1)","Omicron (BA.2)", "Omicron (BA.3)","Omicron (BA.4)","Omicron (BA.5)","Omicron (BA.2.12.1)","Omicron (BA.1 & BA.2)", "Omicron (BA.2.75)","Omicron (BQ.1)","Omicron (XBB)","Omicron (XBB.1.5)","others", "undetermined")
-seq_ch$who_variants <- factor(seq_ch$who_variants, levels = lev)
-#variants_ch$variable <- NULL
 
 ## Divide Switzerland in 6 regions as following:
 ## region 1 «GE, NE, VD, VS»
@@ -221,8 +200,6 @@ from_cantons_to_abrev <- function(x){
   else {return("Unknown")} 
 }
 seq_ch$canton  <- sapply(seq_ch$division, from_cantons_to_abrev)
-#table(seq_ch$division[seq_ch$canton=="Unknown"])
-#table(seq_ch$division,seq_ch$canton)
 from_cantons_to_regions <- function(x){
   if(x== "AG"){return("region_3")}
   else if(x== "AI"){return("region_5")}
@@ -256,7 +233,6 @@ seq_ch$region  <- sapply(seq_ch$canton, from_cantons_to_regions)
 seq_ch$region <- factor(seq_ch$region, levels = c("region_1","region_2","region_3","region_4","region_5","region_6", "Unknown"))
 BAG_data$region  <- sapply(BAG_data$geoRegion, from_cantons_to_regions)
 BAG_data$region <- factor(BAG_data$region, levels = c("region_1","region_2","region_3","region_4","region_5","region_6"))
-#BAG_data$tests_num[BAG_data$geoRegion=="CH"]
 
 region_names <- function(x){
   if(x== "0"){return("CH")}
