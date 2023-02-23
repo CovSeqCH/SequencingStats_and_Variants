@@ -202,10 +202,10 @@ variants_plot_model <- variants_plot_model + theme(legend.position = "none")
 regional_variants_plot_model <- NULL
 regional_variants_plot_model <-  ggplot(predict.eff_date_reg) + 
   geom_line(data= predict.eff_date_reg, aes(x = date, y = prob, color = who_variants))+
-  geom_ribbon(data= predict.eff_date_reg, aes(x= date, ymin = lower,ymax = upper,fill=who_variants),alpha=0.02)+
+  geom_ribbon(data= predict.eff_date_reg, aes(x= date, ymin = lower,ymax = upper,fill=who_variants),alpha=0.4)+
   geom_errorbar(data= variant_week[na.omit(variant_week$region!="CH"),], aes(x = week_day, ymin=lower, ymax=upper, color = who_variants), width=.1) +
   geom_point(data= variant_week[na.omit(variant_week$region!="CH"),],aes(x = week_day, y=conf, color = who_variants))+#, size = conf
-  geom_rect(aes(xmin = as_date(max(seqch$date)), ymin = 0, xmax = time_window[2], ymax = 1), fill= "#e8e8e8", colour= "transparent", alpha=0.4)+
+  geom_rect(aes(xmin = as_date(max(seqch$date)), ymin = 0, xmax = time_window[2], ymax = 1), fill= "#e8e8e8", colour= "transparent", alpha=0.04)+
   scale_x_date(date_breaks = "1 month", 
                date_labels = "%b",
                limits = as_date(c(time_window[1],time_window[2]+15)))+

@@ -44,40 +44,12 @@ colnames(BAG_cases_canton)[2] <- "date"
 colnames(BAG_cases_canton)[3] <- "cases_num"
 BAG_cases_canton <- BAG_cases_canton[BAG_cases_canton$geoRegio %in% cantons_ch,]
 
-BAG_test_canton <- read.csv("./temp_data/data/COVID19Test_geoRegion_PCR_Antigen.csv")
-colnames(BAG_test_canton)[1] <- "date"
-BAG_test_canton <- BAG_test_canton[BAG_test_canton$geoRegio %in% cantons_ch,]
-
-BAG_test_canton_pcr <- BAG_test_canton[BAG_test_canton$nachweismethode=="PCR",]
-colnames(BAG_test_canton_pcr)[2] <- "pcrtests_num"
-colnames(BAG_test_canton_pcr)[3] <- "pcrtests_pos_num"
-
-BAG_test_canton_antig <- BAG_test_canton[BAG_test_canton$nachweismethode=="Antigen_Schnelltest",]
-colnames(BAG_test_canton_antig)[2] <- "antigtests_num"
-colnames(BAG_test_canton_antig)[3] <- "antigtests_pos_num"
-geoR <- grep("geoRegion",colnames(BAG_test_canton))
-BAG_test_canton <- merge(BAG_test_canton_antig[,c(1,2,3,geoR)], BAG_test_canton_pcr[,c(1,2,3,geoR)],by=c("date","geoRegion"), all=TRUE )
-BAG_test_canton<- BAG_test_canton %>% 
-  rowwise() %>% #rowwise will make sure the sum operation will occur on each row
-  mutate(tests_num = sum(antigtests_num,pcrtests_num, na.rm=TRUE))%>% 
-  mutate(tests_pos_num = sum(antigtests_pos_num,pcrtests_pos_num, na.rm=TRUE))
-BAG_test_canton[is.na(BAG_test_canton)] <- 0
-
-BAG_Re_canton <- read.csv("./temp_data/data/COVID19Re_geoRegion.csv")
-BAG_Re_canton <- BAG_Re_canton[BAG_Re_canton$geoRegio %in% cantons_ch,]
-
-BAG_data <- c()
-BAG_data <- merge(BAG_cases_canton[,c("date","geoRegion","cases_num", "pop")], BAG_test_canton[,c("date","geoRegion","tests_num", "tests_pos_num")],by=c("date","geoRegion"), all=TRUE )
-BAG_data <- merge(BAG_data, BAG_Re_canton[,c("date","geoRegion", "median_R_mean", "median_R_highHPD", "median_R_lowHPD")],by=c("date","geoRegion"), all=TRUE )
-BAG_data <- BAG_data[!is.na(BAG_data$cases_num),]
+BAG_data <- BAG_cases_canton[!is.na(BAG_cases_canton$cases_num),]
 
 unlink("temp_data", recursive = TRUE)
 unlink(paste0("covid19_bag_", Sys.Date(),".zip"), recursive = TRUE)
 remove(BAG_cases_canton)
-remove(BAG_test_canton)
-remove(BAG_Re_canton)
-remove(BAG_test_canton_antig)
-remove(BAG_test_canton_pcr)
+
 
 ## Swiss SARS-CoV-2 sequencing metadata:
 url <- GET("https://lapis.cov-spectrum.org/open/v1/sample/aggregated?country=Switzerland&fields=date,division,pangoLineage")#Used since Oct 2022
@@ -95,7 +67,7 @@ remove(jsonRespParsed)
 ### prepare data / data cleaning:
 month_end <- as.numeric(format(Sys.Date(),"%m"))
 year_end <- as.numeric(format(Sys.Date(),"%Y"))
-time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end, sprintf("%02d", month_end),"-30"))-1)
+time_window <- c(as_date("2022-01-01"), as_date(paste0(year_end,"-", sprintf("%02d", month_end+1),"-01"))-1)
 
 month_start <- format(as.numeric(format(Sys.Date(),"%m"))-1, format="%m")
 if(month_end==1){

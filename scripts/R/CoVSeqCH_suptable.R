@@ -24,72 +24,27 @@ seqch <- seqch[!seqch$who_variants %in% "undetermined",]
 table <- as.data.frame(matrix(ncol=48, nrow= 33))
 rownames(table) <- c("CH",
                      "region_1",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_1"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_1"])),
                      "region_2",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_2"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_2"])),
                      "region_3",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_3"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_3"])),
                      "region_4",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_4"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_4"])),
                      "region_5",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_5"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_5"])),
                      "region_6",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_6"]))
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_6"]))
 )
 
 for (c in unname(unlist(rownames(table)))){
   #population size:
   if(grepl("region", c)){
-    table[,1][rownames(table) == c] <- sum(unique(BAGdata$pop[BAGdata$region %in% c]))
+    table[,1][rownames(table) == c] <- sum(unique(BAG_data$pop[BAG_data$region %in% c]))
   }
   else{
-    table[,1][rownames(table) == c] <- unique(BAGdata$pop[BAGdata$geoRegion %in% c])
+    table[,1][rownames(table) == c] <- unique(BAG_data$pop[BAG_data$geoRegion %in% c])
   }
-  #confirmed cases:
-  if(grepl("region", c)){
-    table[,2][rownames(table) == c] <- sum(na.omit(BAGdata$cases_num[BAGdata$region %in% c]))
-  }
-  else{
-    table[,2][rownames(table) == c] <- sum(na.omit(BAGdata$cases_num[BAGdata$geoRegion %in% c]))
-  }
-  #14d-incidence
-  period_14 <- length(period_days)/14
-  if(grepl("region", c)){
-    table[,3][rownames(table) == c] <- round(sum(na.omit(BAGdata$cases_num[BAGdata$region %in% c]))/sum(unique(BAGdata$pop[BAGdata$region %in% c]))*period_14*10^5)
-  }
-  else{
-    table[,3][rownames(table) == c] <- round(sum(na.omit(BAGdata$cases_num[BAGdata$geoRegion %in% c]))/unique(BAGdata$pop[BAGdata$geoRegion %in% c])*period_14*10^5)
-  }
-  #effective reproduction number taken from BAG 
-  if(grepl("region", c)){
-    table[,4][rownames(table) == c] <- paste0(format(round(median(na.omit(BAGdata$median_R_mean[BAGdata$region %in% c])),2), nsmall = 2)," (",format(round(median(na.omit(BAGdata$median_R_lowHPD[BAGdata$region %in% c])),2), nsmall = 2),"-",format(round(median(na.omit(BAGdata$median_R_highHPD[BAGdata$region %in% c])),2), nsmall = 2),")")
-  }
-  else{
-    table[,4][rownames(table) == c] <- paste0(format(round(median(na.omit(BAGdata$median_R_mean[BAGdata$geoRegion %in% c])),2), nsmall = 2)," (",format(round(median(na.omit(BAGdata$median_R_lowHPD[BAGdata$geoRegion %in% c])),2), nsmall = 2),"-",format(round(median(na.omit(BAGdata$median_R_highHPD[BAGdata$geoRegion %in% c])),2), nsmall = 2),")")
-  }
-  # number of tests
-  if(grepl("region", c)){
-    table[,5][rownames(table) == c] <- sum(na.omit(BAGdata$tests_num[BAGdata$region %in% c]))
-  }
-  else{
-    table[,5][rownames(table) == c] <- sum(na.omit(BAGdata$tests_num[BAGdata$geoRegion %in% c]))
-  }
-  # incidence of tests for 14d over period
-  if(grepl("region", c)){
-    table[,6][rownames(table) == c] <- round(sum(na.omit(BAGdata$tests_num[BAGdata$region %in% c]))/sum(unique(BAGdata$pop[BAGdata$region %in% c]))*10^5)
-  }
-  else{
-    table[,6][rownames(table) == c] <- round(sum(na.omit(BAGdata$tests_num[BAGdata$geoRegion %in% c]))/unique(BAGdata$pop[BAGdata$geoRegion %in% c])*10^5)
-  }
-  
-  # test positivity
-  if(grepl("region", c)){
-    table[,7][rownames(table) == c] <- format(round(sum(na.omit(BAGdata$tests_pos_num[BAGdata$region %in% c]))/sum((na.omit(BAGdata$tests_num[BAGdata$region %in% c])))*10^2,2), nsmall = 2)
-  }
-  else{
-    table[,7][rownames(table) == c] <- format(round(sum(na.omit(BAGdata$tests_pos_num[BAGdata$geoRegion %in% c]))/sum(na.omit(BAGdata$tests_num[BAGdata$geoRegion %in% c]))*10^2,2), nsmall = 2)
-  }
-  
   # number of sequenced samples 
   if(grepl("CH", c)){
     table[,8][rownames(table) == c] <- length(seqch$who_variants[seqch$country %in% c])
@@ -578,17 +533,17 @@ colnames(table) <- c("Population size",
 
 rownames(table) <- c("Switzerland overall",
                      "Region 1",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_1"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_1"])),
                      "Region 2",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_2"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_2"])),
                      "Region 3",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_3"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_3"])),
                      "Region 4",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_4"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_4"])),
                      "Region 5",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_5"])),
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_5"])),
                      "Region 6",
-                     unique(na.omit(BAGdata$geoRegion[BAGdata$region=="region_6"]))
+                     unique(na.omit(BAG_data$geoRegion[BAG_data$region=="region_6"]))
 )
 
 table[is.na(table)] <- "-"
@@ -596,7 +551,7 @@ table[is.na(table)] <- "-"
 
 table <- table[,-c(4)]
 table <- table[, colSums(table != 0) > 0 & colSums(table == "-")!= length(table[,1])]
-
+table <- table[,-c(3)]
 
 perioddate <- paste0(unique(format(period_date, format="%b")),collapse = "_")
 write.xlsx(table, paste0("./tables/",format(as_date(mean(period_date)), format = "%Y-%m"),"/sup_table_overview_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
@@ -604,7 +559,7 @@ write.xlsx(table, paste0("./tables/",format(as_date(mean(period_date)), format =
 
 
 table <- table[grepl("Region|Switzerland", rownames(table)),]
-table<- table[,-c(1:7)]
+
 
 write.xlsx(table, paste0("./tables/",format(as_date(mean(period_date)), format = "%Y-%m"),"/regional_table_",perioddate,".xlsx"),sheetName=paste0("",period_date[1], " to ", period_date[2]), 
            col.names=TRUE, row.names=TRUE, append=FALSE)

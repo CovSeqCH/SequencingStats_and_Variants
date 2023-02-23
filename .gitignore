@@ -1,3 +1,10 @@
+#R
+*_old.R
+*Rhistory
+
+#Data
+*.zip
+
 # Editor
 .vscode/
 .DS_Store
