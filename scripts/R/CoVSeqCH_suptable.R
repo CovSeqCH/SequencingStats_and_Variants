@@ -40,10 +40,70 @@ rownames(table) <- c("CH",
 for (c in unname(unlist(rownames(table)))){
   #population size:
   if(grepl("region", c)){
-    table[,1][rownames(table) == c] <- sum(unique(BAG_data$pop[BAG_data$region %in% c]))
+    table[,1][rownames(table) == c] <- sum(unique(BAGdata$pop[BAGdata$region %in% c]))
   }
   else{
-    table[,1][rownames(table) == c] <- unique(BAG_data$pop[BAG_data$geoRegion %in% c])
+    table[,1][rownames(table) == c] <- unique(BAGdata$pop[BAGdata$geoRegion %in% c])
+  }
+  #confirmed cases:
+  if(grepl("region", c)){
+    table[,2][rownames(table) == c] <- sum(na.omit(BAGdata$cases_num[BAGdata$region %in% c]))
+  }
+  else{
+    table[,2][rownames(table) == c] <- sum(na.omit(BAGdata$cases_num[BAGdata$geoRegion %in% c]))
+  }
+  #14d-incidence
+  period_14 <- length(period_days)/14
+  if(grepl("region", c)){
+    table[,3][rownames(table) == c] <- round(sum(na.omit(BAGdata$cases_num[BAGdata$region %in% c]))/sum(unique(BAGdata$pop[BAGdata$region %in% c]))*period_14*10^5)
+  }
+  else{
+    table[,3][rownames(table) == c] <- round(sum(na.omit(BAGdata$cases_num[BAGdata$geoRegion %in% c]))/unique(BAGdata$pop[BAGdata$geoRegion %in% c])*period_14*10^5)
+  }
+ 
+  # number of tests
+  if(grepl("region", c)){
+    table[,5][rownames(table) == c] <- sum(na.omit(BAGdata$tests_num[BAGdata$region %in% c]))
+  }
+  else{
+    table[,5][rownames(table) == c] <- sum(na.omit(BAGdata$tests_num[BAGdata$geoRegion %in% c]))
+  }
+  # incidence of tests for 14d over period
+  if(grepl("region", c)){
+    table[,6][rownames(table) == c] <- round(sum(na.omit(BAGdata$tests_num[BAGdata$region %in% c]))/sum(unique(BAGdata$pop[BAGdata$region %in% c]))*10^5)
+  }
+  else{
+    table[,6][rownames(table) == c] <- round(sum(na.omit(BAGdata$tests_num[BAGdata$geoRegion %in% c]))/unique(BAGdata$pop[BAGdata$geoRegion %in% c])*10^5)
+  }
+  
+  # test positivity
+  if(grepl("region", c)){
+    table[,7][rownames(table) == c] <- format(round(sum(na.omit(BAGdata$tests_pos_num[BAGdata$region %in% c]))/sum((na.omit(BAGdata$tests_num[BAGdata$region %in% c])))*10^2,2), nsmall = 2)
+  }
+  else{
+    table[,7][rownames(table) == c] <- format(round(sum(na.omit(BAGdata$tests_pos_num[BAGdata$geoRegion %in% c]))/sum(na.omit(BAGdata$tests_num[BAGdata$geoRegion %in% c]))*10^2,2), nsmall = 2)
+  }
+  
+  # number of sequenced samples 
+  if(grepl("CH", c)){
+    table[,8][rownames(table) == c] <- length(seqch$who_variants[seqch$country %in% c])
+  }
+  else if(grepl("region", c)){
+    table[,8][rownames(table) == c] <- length(seqch$who_variants[seqch$region %in% c])
+  }
+  else{
+    table[,8][rownames(table) == c] <- length(seqch$who_variants[seqch$canton %in% c])
+  }
+  
+  # Proportion of cases that have been sequenced
+  if(grepl("CH", c)){
+    table[,9][rownames(table) == c] <- format(round(length(na.omit(seqch$who_variants[seqch$country %in% c]))/sum(BAGdata$cases_num[BAGdata$geoRegion %in% c])*100,1), nsmall = 1)
+  }
+  else if(grepl("region", c)){
+    table[,9][rownames(table) == c] <- format(round(length(na.omit(seqch$who_variants[seqch$region %in% c]))/sum(BAGdata$cases_num[BAGdata$region %in% c])*100,1), nsmall = 1)
+  }
+  else{
+    table[,9][rownames(table) == c] <- format(round(length(na.omit(seqch$who_variants[seqch$canton %in% c]))/sum(BAGdata$cases_num[BAGdata$geoRegion %in% c])*100,1), nsmall = 1)
   }
   # number of sequenced samples 
   if(grepl("CH", c)){

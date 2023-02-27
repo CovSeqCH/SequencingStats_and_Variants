@@ -38,13 +38,34 @@ url <- gsub(",", "",url)
 download(url, dest=paste0("covid19_bag_", Sys.Date(),".zip"), mode="wb") 
 unzip(paste0("covid19_bag_", Sys.Date(),".zip"), exdir = "./temp_data")
 
-
-BAG_cases_canton <- read.csv("./temp_data/data/COVID19Cases_geoRegion.csv")
-colnames(BAG_cases_canton)[2] <- "date"
+BAG_cases_canton <- read.csv("./temp_data/data/COVID19Cases_geoRegion_w.csv")
+colnames(BAG_cases_canton)[2] <- "week"
+BAG_cases_canton$week <- gsub(53,52,BAG_cases_canton$week)
 colnames(BAG_cases_canton)[3] <- "cases_num"
 BAG_cases_canton <- BAG_cases_canton[BAG_cases_canton$geoRegio %in% cantons_ch,]
 
-BAG_data <- BAG_cases_canton[!is.na(BAG_cases_canton$cases_num),]
+BAG_test_canton <- read.csv("./temp_data/data/COVID19Test_geoRegion_PCR_Antigen_w.csv")
+colnames(BAG_test_canton)[2] <- "week"
+BAG_test_canton$week <- gsub(53,52,BAG_test_canton$week)
+BAG_test_canton <- BAG_test_canton[BAG_test_canton$geoRegio %in% cantons_ch,]
+
+BAG_test_canton_pcr <- BAG_test_canton[BAG_test_canton$nachweismethode=="PCR",]
+colnames(BAG_test_canton_pcr)[3] <- "pcrtests_num"
+colnames(BAG_test_canton_pcr)[4] <- "pcrtests_pos_num"
+
+BAG_test_canton_antig <- BAG_test_canton[BAG_test_canton$nachweismethode=="Antigen_Schnelltest",]
+colnames(BAG_test_canton_antig)[3] <- "antigtests_num"
+colnames(BAG_test_canton_antig)[4] <- "antigtests_pos_num"
+BAG_test_canton <- merge(BAG_test_canton_antig[,c(1,2,3,4)], BAG_test_canton_pcr[,c(1,2,3,4)],by=c("week","geoRegion"), all=TRUE )
+BAG_test_canton[is.na(BAG_test_canton)] <- 0
+BAG_test_canton<- BAG_test_canton %>% 
+  rowwise() %>% #rowwise will make sure the sum operation will occur on each row
+  mutate(tests_num = sum(antigtests_num,pcrtests_num, na.rm=TRUE))%>% 
+  mutate(tests_pos_num = sum(antigtests_pos_num,pcrtests_pos_num, na.rm=TRUE))
+BAG_data <- merge(BAG_cases_canton[,c("week","geoRegion","cases_num", "pop")], BAG_test_canton[,c("week","geoRegion","tests_num", "tests_pos_num")],by=c("week","geoRegion"), all=TRUE )
+
+BAG_data <- BAG_data[!is.na(BAG_data$cases_num),]
+BAG_data$date <- parse_date_time(paste(BAG_data$week, '-Mon'), "%Y-%W-%a")
 
 unlink("temp_data", recursive = TRUE)
 unlink(paste0("covid19_bag_", Sys.Date(),".zip"), recursive = TRUE)
