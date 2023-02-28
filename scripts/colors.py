@@ -1,9 +1,8 @@
 variant_to_color = {
-    "Delta": "#66a366", 
-    "BA.2*": "#cfafcf",
-    "BA.4*": "#8a66ff",
-    "BA.5*": "#585eff",
-    "BA.2.75*": "#4a8f3a",
-    "BQ.1*": "#800f45",
-    "others": "#216dc7",
+    "BA.2*": "#cfafd0",
+    "BA.5*": "#585fff",
+    "BA.2.75*": "#018fe0",
+    "BQ.1*": "#ac00e0",
+    "XBB*": "#dd6bfe",
+    "others": "#66c267",
 }

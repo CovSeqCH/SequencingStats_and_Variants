@@ -1,40 +1,28 @@
 # Swiss national Sars-CoV-2 genomic surveillance program: Plots and Tables
 
 ![plot](./plots/latest/png/sequence_share_CH.png)
-Figure 1: Total number of sequences produced per the Swiss genomic SARS-CoV-2 surveillance program and fraction of all reported cases
-
----
-
-![plot](./plots/latest/png/sequence_share_regions.png)
-Figure 2: Fraction of known cases sequenced by surveillance region (definition below)
+Figure 1: Total number of sequences produced per the Swiss genomic SARS-CoV-2 surveillance program
 
 ---
 
 ![plot](./plots/latest/png/sequences_regions.png)
-Figure 3: Total number of sequences per calendar week per surveillance region
+Figure 2: Total number of sequences per calendar week per surveillance region
 
 ---
 
 ![plot](./plots/latest/png/variant_share_CH.png)
-Figure 4: Variant share per calendar week in Switzerland
-
----
-
-![plot](./plots/latest/png/variant_estimate_CH.png)
-Figure 5: Estimate of the number of cases by variant
+Figure 3: Variant share per calendar week in Switzerland
 
 ---
 
 ![plot](./plots/latest/png/variant_map.png)
-Figure 6: Variant share in the most recent 3 complete calendar weeks by surveillance region
+Figure 4: Variant share in the most recent 4 complete calendar weeks by surveillance region
 
 ## Description
 
-Command Line Interface program to create plots and tables for the monthly report of the Swiss national Sars-CoV-2 genomic surveillance program.
+Command line program to create plots and tables for the monthly report of the Swiss national Sars-CoV-2 genomic surveillance program.
 
 Sequencing data is obtained from covSpectrum's public API (for docs see <https://github.com/cevo-public/cov-spectrum-docs/blob/develop/API.md>)
-
-Case data is obtained from the FOPH Covid data website's API: <https://www.covid19.admin.ch/en/overview>
 
 Data is merged and binned by calendar week (beginning on Mondays). Data from cantons is aggregated to 6 Swiss Sentinella Surveillance Region:
 
