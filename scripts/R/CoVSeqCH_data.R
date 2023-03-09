@@ -129,11 +129,11 @@ who_variant_names <- function(x){
   if(is.na(x)){return("undetermined")}
  #else if(grepl("B.1.1.529|BA.1|BA.2",x)){return("Omicron")}#,useBytes = FALSE
   else if(grepl("BA.2.75",x)){return("Omicron (BA.2.75)")}#,useBytes = FALSE
-  else if(grepl("BA.2",x)){return("Omicron (BA.2)")}#,useBytes = FALSE
+  else if(grepl("BA.2|BG|BL|BP|BJ|BL|BS|CH|BM|CJ|CM",x)){return("Omicron (BA.2)")}
   else if(grepl("BA.1",x)){return("Omicron (BA.1)")}#,useBytes = FALSE
   else if(grepl("BA.3",x)){return("Omicron (BA.3)")}#,useBytes = FALSE
   else if(grepl("BA.4",x)){return("Omicron (BA.4)")}#,useBytes = FALSE
-  else if(grepl("BA.5",x)){return("Omicron (BA.5)")}#,useBytes = FALSE
+  else if(grepl("BA.5|BQ|BQ.1|BQ.1.1|BQ.1.2|BQ.1.2|BQ.1.3|BQ.1.4|BW|BF|BE|BK|BT|BU|BV|CF|CG|CK|CL|CN|CY|DF|DJ|DL",x)){return("Omicron (BA.5)")}
   else if(grepl("XE",x)){return("Omicron (BA.1 & BA.2)")}#,useBytes = FALSE
   else if(grepl("BA.2.12.1",x)){return("Omicron (BA.2.12.1)")}#,useBytes = FALSE
   else if(grepl("BQ.1|BQ.1.1|BQ.1.2|BQ.1.2|BQ.1.3|BQ.1.4",x)){return("Omicron (BQ.1)")}#,useBytes = FALSE
