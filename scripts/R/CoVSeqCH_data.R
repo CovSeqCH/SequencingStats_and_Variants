@@ -103,7 +103,6 @@ period_date <- period(Sys.Date())
 if(month_start==12){
   period_date <- c(as_date(format(paste0(year(Sys.Date())-1,"12","01"))), as_date(format(paste0(year(Sys.Date())-1,"12","31"))))
 }
-period_days <- seq(period_date[1], period_date[2],1)
 
 
 # looking at weeks not 1st to last date of month:
@@ -115,8 +114,10 @@ if(weekdays( period_date[1])!= "Monday"){
   period_date <- c(ceiling_date(as.Date(period_date[1], "%m/%d/%Y"), unit="week"), floor_date(as.Date(period_date[2], "%m/%d/%Y"), unit="week"))
   
 }
+if(month_start==2 & year_end==2023){
+  period_date <- c(as_date(format("2023-01-30")), period_date[2])
+}
 period_days <- seq(period_date[1], period_date[2],1)
-
 
 time_window[2] <- time_window[2]-1
 BAG_data <- subset(BAG_data, as_date(date) %in% seq(time_window[1],time_window[2],1))
@@ -125,6 +126,9 @@ seq_ch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],time_window[2],1)
 
 ### renaming functions / variables generation
 ## Renaming variants according to WHO
+
+
+
 who_variant_names <- function(x){
   if(is.na(x)){return("undetermined")}
  #else if(grepl("B.1.1.529|BA.1|BA.2",x)){return("Omicron")}#,useBytes = FALSE
