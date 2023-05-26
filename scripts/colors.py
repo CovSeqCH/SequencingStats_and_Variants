@@ -1,8 +1,11 @@
 variant_to_color = {
-    "BA.2*": "#cfafd0",
-    "BA.5*": "#585fff",
-    "BA.2.75*": "#018fe0",
-    "BQ.1*": "#ac00e0",
-    "XBB*": "#dd6bfe",
-    "others": "#66c267",
+    "recombinant": "#167288",
+    "BA.5*": "#8cdaec",
+    "BA.2.75*": "#b45248",
+    "XBB*": "#d48c84",
+    "XBB.1.5*": "#a89a49",
+    "XBB.1.9*": "#d6cfa2",
+    "XBB.1.16*": "#3cb464",
+    "XBB.2.3*": "#9bddb1",
+    "others": "#643c6a",
 }
