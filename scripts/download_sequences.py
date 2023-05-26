@@ -4,6 +4,7 @@ import json
 
 import pandas as pd
 import requests
+from pango_aliasor.aliasor import Aliasor
 
 from scripts.download_cases import cases_by_cw
 from scripts.participating_labs import excluded_labs
@@ -23,11 +24,18 @@ def generate_csv():
     df = df.assign(region=lambda x: x.division.map(region_mapping).fillna(0).astype("int64"))
 
     # %%
+    aliasor = Aliasor()
 
     def lineage_to_variant(lineage):
+        """
+        Takes Pango lineage string and returns variant name
+        Uses variant to lineage mapping from variant_to_pango.py
+        Most specific lineages are at top
+        Expand via aliasor and see if it matches
+        """
         for val, keys in variant_to_lineage.items():
             for key in keys:
-                if str(lineage).startswith(key):
+                if str(aliasor.uncompress(lineage)).startswith(key):
                     return val
         if debug:
             print(f'{lineage} assigned "others"')
@@ -35,7 +43,7 @@ def generate_csv():
         #     return "None"
         return "others"
 
-    debug = True
+    debug = False
     recent = df[df.index > "20210830"]
     recent.assign(variant=lambda x: x.nextcladePangoLineage.map(lineage_to_variant))
     debug = False
