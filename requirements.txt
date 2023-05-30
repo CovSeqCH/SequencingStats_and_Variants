@@ -2,3 +2,4 @@ pandas==1.2.4
 matplotlib==3.4.2
 requests==2.25.0
 geopandas==0.10.2
+pango_aliasor
