@@ -4,6 +4,8 @@
 
 #Data
 *.zip
+CoVSeqCH_data.R
+scripts/R/CoVSeqCH_data.R
 
 # Editor
 .vscode/
