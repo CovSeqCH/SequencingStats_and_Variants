@@ -10,6 +10,9 @@ setwd("/Users/mr19m223/Documents/COVID_projects/SequencingStats_and_Variants")#m
 seqch <- subset(seq_ch, as_date(date) %in% seq(time_window[1],period_date[2],1))
 seqch$who_variants[seqch$who_variants %in% "Mu"] <- "others"
 seqch$who_variants[seqch$who_variants  %in% "B.1.1.318"] <- "others"
+seqch$who_variants[seqch$who_variants  %in% "C.36*"] <- "others"
+seqch$who_variants[seqch$who_variants  %in% "BA.3*"] <- "others"
+seqch$who_variants[seqch$who_variants  %in% "HK.3"] <- "XBB.1.9*"
 seqch <- seqch[!seqch$who_variants  %in% "undetermined",]
 
 lev <- names(table(seqch$who_variants)[table(seqch$who_variants)>0])
@@ -22,6 +25,10 @@ lev_variants <- c("Alpha",  "Beta",  "Gamma", "Delta",
                   "Omicron (BA.2.75)","Omicron (BQ.1)",
                   "Omicron (XBB*)","Omicron (XBB.1.16*)",
                   "Omicron (XBB.1.5*)","Omicron (XBB.1.9*)",
+                  
+                  
+                  "Omicron (EG.5*)",
+                  
                   "Omicron (XBB.2.3*)",
                   "Omicron (rest)",
                   "others", "undetermined")
@@ -31,7 +38,7 @@ color_variants <- c("#E29391", "#E5A993", "#E8C195","#EBD898",
                              "#ABDBDC","#ADCBA5", 
                              "#A2D0C2", "#A2D0E9",
                     "#821e1b","#822f66", "#c77599",
-                             "#35358c",
+                             "#35358c","#35668c",
                              "#5e5e5d", "#FFFFFF")
 color_variants <- setNames(color_variants, lev_variants)
 #variants included in data 
@@ -236,7 +243,7 @@ log_regional_ch_variants<- grid.arrange(variants_plot_model_log,
                                         regional_variants_plot_model_log,
                                         variants_legend, nrow = 1)
 
-ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 27,  bg = "transparent")
-ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 27,  bg = "transparent")
-ggsave(log_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_log_",format(period_date[2],"%Y-%m"), ".png"), height = 6, width = 20,  bg = "transparent")
+ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".png"), height = 9, width = 32,  bg = "transparent")
+ggsave(com_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/pdf/multinomial_variants_ch_reg_",format(period_date[2],"%Y-%m"), ".pdf"), height = 9, width = 32,  bg = "transparent")
+ggsave(log_regional_ch_variants, filename = paste0("./plots/",format(period_date[2],"%Y-%m"),"/png/multinomial_variants_ch_reg_log_",format(period_date[2],"%Y-%m"), ".png"), height = 6, width = 22,  bg = "transparent")
 
