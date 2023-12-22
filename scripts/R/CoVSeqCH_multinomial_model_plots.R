@@ -12,7 +12,7 @@ seqch$who_variants[seqch$who_variants %in% "Mu"] <- "others"
 seqch$who_variants[seqch$who_variants  %in% "B.1.1.318"] <- "others"
 seqch$who_variants[seqch$who_variants  %in% "C.36*"] <- "others"
 seqch$who_variants[seqch$who_variants  %in% "BA.3*"] <- "others"
-seqch$who_variants[seqch$who_variants  %in% "HK.3"] <- "XBB.1.9*"
+seqch$who_variants[grepl("HK.3", seqch$who_variants)] <- "Omicron (XBB.1.9*)"
 seqch <- seqch[!seqch$who_variants  %in% "undetermined",]
 
 lev <- names(table(seqch$who_variants)[table(seqch$who_variants)>0])
@@ -38,7 +38,8 @@ color_variants <- c("#E29391", "#E5A993", "#E8C195","#EBD898",
                              "#ABDBDC","#ADCBA5", 
                              "#A2D0C2", "#A2D0E9",
                     "#821e1b","#822f66", "#c77599",
-                             "#35358c","#35668c",
+                    "#35668c","#35278c",
+                             "#35355c",
                              "#5e5e5d", "#FFFFFF")
 color_variants <- setNames(color_variants, lev_variants)
 #variants included in data 
@@ -180,6 +181,10 @@ g_legend <- function(a.gplot,num){
 ## overall Swiss multi-nominal figure
 variant_week_ch <- variant_week[na.omit(variant_week$region %in%"CH"),]
 variant_week_ch$who_variants <- factor(variant_week_ch$who_variants, levels = lev_variants)
+variant_week$who_variants <- factor(variant_week$who_variants, levels = lev_variants)
+predict_mnom_date$who_variants <- factor(predict_mnom_date$who_variants, levels = lev_variants)
+predict.eff_date_reg$who_variants<- factor(predict.eff_date_reg$who_variants, levels = lev_variants)
+
 variants_plot_model <- ggplot() + 
   geom_line(data=predict_mnom_date, aes(x = date, y = prob, color = who_variants))+#predict.eff_date_reg[predict.eff_date_reg$region=="Region 1",]
   geom_ribbon(data=predict_mnom_date, aes(x = date, y = prob, ymin = lower,ymax = upper,fill=who_variants),alpha=0.4)+
