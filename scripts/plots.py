@@ -91,23 +91,3 @@ def generate_plots(df, output_dir):
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%-W'))
     plt.tight_layout()
     save_fig(fig, output_dir, 'variant_share_CH')
-
-    data = df[df.region == 0]
-    fig, ax = plt.subplots(figsize=(7,4))
-    variants = list(variant_to_lineage.keys())
-    variants.append('others')
-    for key in variants:
-        ax.plot(data.index, data[key]/data.sequences*data.cases,
-                label=key, color=to_rgb(variant_to_color[key]))
-    ax.axvspan(monday_4_weeks_ago, today + dt.timedelta(days=10), color='grey', alpha=0.3, label='Incomplete data')
-    ax.set_title(
-        "Estimated number of cases per week per variant in Switzerland")
-    ax.set_ylabel("Estimated number of cases (fraction x cases)")
-    ax.set_xlabel(f"Sampling date (Calendar week) - Generated: {today}")
-    ax.set_ylim(0,)
-    ax.set_xlim(df.index.min(), df.index.max())
-    ax.legend()
-    ax.set_xticks(data.index)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%-W'))
-    plt.tight_layout()
-    save_fig(fig, output_dir, 'variant_estimate_CH')
